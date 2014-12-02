@@ -21,20 +21,20 @@ Goal of this doc: Prioritized list of the most important CLI commands for full s
 * If you want to debate something or just flame, HN is the best place
 
 ##### Authors
-* Nemil Dalal (nemild at gmail) - full stack dev
+* Nemil Dalal (nemild at gmail)
 * *[Add your name if you spend more than an hour on this doc]*
 
 ## Table of Contents
-<a href="#keyboard_shortcuts">Keyboard Shortcuts</a>
-Getting around the command line
-Basics
-Advanced
+<a href="#keyboard_shortcuts">Keyboard Shortcuts</a>  
+<a href="#getting_around_the_command_line">Getting around the command line</a>  
+<a href="#basics">Basics</a>  
+<a href="#advanced">Advanced</a>  
+<a href="#command_cocktails">Command Cocktails</a>  
 
-Sysadmin Basics
-Vim (Uber-)Basics
-Command Cocktails
-Setup
-Bash Scripting
+<a href="#sysadmin_basics">Sysadmin Basics</a>  
+<a href="#vim_basics">Vim (Uber-)Basics</a>  
+<a href="#setup">Setup</a>  
+<a href="#bash_scripting">Bash Scripting</a>  
 
 ## [Keyboard Shortcuts](#keyboard_shortcuts)
 Keyboard Shortcut | Description
@@ -56,3 +56,81 @@ Keyboard Shortcut | Description
 *Ctrl-K* | delete from here to end of line
 *Ctrl-B/Ctrl-F* | Page up and down
 *Ctrl-D/Ctrl-U* | Half page up and down
+
+## [Getting around the command line](#getting_around_the_command_line)
+
+
+## [Basics](#basics)
+
+
+## [Advanced](#advanced)
+
+
+## [Command Cocktails](#command_cocktails)
+
+
+## [Sysadmin Basics](#sysadmin_basics)
+
+
+## [vim basics](#vim_basics)
+DISCLAIMER: This is just to help someone get the basics of Vim, not for regular users  
+
+### General Notes
+
+
+### CLI Commands
+Command | Description
+:------: | -----
+vimtutor | you can type this at the command line to get a Vim textual tutorial
+vim filename.txt +25 | open file and go to line 25
+vim filename.txt +/abc | open file and go to first occurrence of substring
+
+### Vim Commands
+Key Sequence | Description
+:------: | ------
+$ | end of line
+0 | start of line
+w | one word forward
+2e | 2 words forward, at end of line
+b | before
+10j | down ten lines
+10k | up ten lines
+dw | delete word
+u | undo last
+U | Undo all on line
+dd/p | cut and paste
+/ | search for search term going forward
+? | search for search term going backward
+n (forward) N (backward)
+gg | top of file
+G | bottom of file
+25G | Goto line
+% | go to matching parentheses
+3igoESC twice | insert go 3 times
+/| next/previous of the word that you are at
+^F, ^B | page up and page down
+:w | save
+:wq | save and quit
+:q! | quit without saving
+
+## [Setup](#setup)
+
+### Commonly Used Aliases
+alias ll=”ls -larth”  
+alias hist='history  | grep'  
+alias webserver="python -m SimpleHTTPServer"  
+
+alias ..="cd .."  
+alias ...="cd ../.."  
+alias cd6="cd ../../../../../.."  
+alias cd5="cd ../../../../.."  
+alias cd4="cd ../../../.."  
+alias cd3="cd ../../.."  
+alias cd2="cd ../.."  
+
+alias pbcopy='xclip -selection clipboard' # on Linux to replicate the Mac functionality of command line clipboard  
+alias pbpaste='xclip -selection clipboard -o' # on Linux to replicate the Mac functionality of command line clipboard  
+
+
+## [Bash Scripting](#bash_scripting)
+
