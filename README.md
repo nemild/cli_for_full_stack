@@ -58,6 +58,31 @@ Keyboard Shortcut | Description
 *Ctrl-D/Ctrl-U* | Half page up and down
 
 ## [Getting around the command line](#getting_around_the_command_line)
+```bash
+ls \ # the backslash lets you continue a command on the next line
+cd abc; ls # the semicolon lets you put separate multiple commands on the same line
+cd abc && ls # && means run second command only if first succeeds, compare to ||
+\gpom # ignore the alias
+ ls # leading space means don’t store in history
+```
+
+#### Previous Commands or Arguments
+```bash
+history # see list of previous typed commands
+!! # run previous command
+!105 # run command number 105 from history
+
+^abc^def # replace first argument with second argument in previous command (only for first occurrence)
+!!gs/foo/bar # run last command replacing all foo with bar
+
+!:$ # last argument of previous command
+!:0 # first argument of previous command (and number can be incremented for other args)
+!string # run most recent argument starting with string
+```
+
+#### Other Basics
+* Three streams are stdin, stdout, and stderr
+* find . 2> # the 2> pipes out stderr only, can use &> to pipe out both stdout and stderr
 
 
 ## [Basics](#basics)
@@ -67,7 +92,16 @@ Keyboard Shortcut | Description
 
 
 ## [Command Cocktails](#command_cocktails)
-
+Command | Description
+:-----: | -----
+grep . *.txt | 
+diff <(ls) <(ls) | compare two commands, rather than having to write to a file first
+read var1 | take stdin to variable
+wc < abc.txt | use this instead of cat abc.txt \| wc, saves a new process, important only for big files; don't pipe a cat
+host # get ip of domain
+(head -5; tail -5) < data | explore first 5 and last 5 lines
+head -3 data* \| cat | list out first three lines of all files
+time read | simple stopwatch
 
 ## [Sysadmin Basics](#sysadmin_basics)
 
@@ -75,17 +109,17 @@ Keyboard Shortcut | Description
 ## [vim basics](#vim_basics)
 DISCLAIMER: This is just to help someone get the basics of Vim, not for regular users  
 
-### General Notes
+#### General Notes
 
 
-### CLI Commands
+#### CLI Commands
 Command | Description
 :------: | -----
 vimtutor | you can type this at the command line to get a Vim textual tutorial
 vim filename.txt +25 | open file and go to line 25
 vim filename.txt +/abc | open file and go to first occurrence of substring
 
-### Vim Commands
+#### Vim Commands
 Key Sequence | Description
 :------: | ------
 $ | end of line
@@ -115,7 +149,7 @@ G | bottom of file
 
 ## [Setup](#setup)
 
-### Commonly Used Aliases
+#### Commonly Used Aliases
 alias ll=”ls -larth”  
 alias hist='history  | grep'  
 alias webserver="python -m SimpleHTTPServer"  
