@@ -37,20 +37,22 @@ Setup
 Bash Scripting
 
 ## [Keyboard Shortcuts](#keyboard_shortcuts)
-| *Ctrl-C* | terminate program |
-| *Ctrl-A* | go to start of line |
-| *Ctrl-E* | go to end of line |
-| *Ctrl-W* | cut the previous word |
-| *Ctrl-K* | Paste the word |
-| *Ctrl -* | undo |
-| *Ctrl-U* | cut the line |
-| *Ctrl-U/Ctrl-Y* | Cut line, write text and then paste line after new text |
-| *Ctrl-X/Ctrl-E* | use text editor to input command, used for long or multiline co*mmands |
-| *Ctrl-L* | clear screen |
-| *Ctrl-D* | terminate program |
-| *Ctrl-Z* | suspend program |
-| *Ctrl-R* | search command history |
-| *ESC-.* | past last argument of previous command |
-| *Ctrl-K* | delete from here to end of line |
-| *Ctrl-B/Ctrl-F* | Page up and down |
-| *Ctrl-D/Ctrl-U* | Half page up and down |
+Keyboard Shortcut | Description
+:-------: | ---------
+*Ctrl-C* | terminate program
+*Ctrl-A* | go to start of line
+*Ctrl-E* | go to end of line
+*Ctrl-W* | cut the previous word
+*Ctrl-K* | Paste the word
+*Ctrl -* | undo
+*Ctrl-U* | cut the line
+*Ctrl-U/Ctrl-Y* | Cut line, write text and then paste line after new text
+*Ctrl-X/Ctrl-E* | use text editor to input command, used for long or ltiline co*mmands
+*Ctrl-L* | clear screen
+*Ctrl-D* | terminate program
+*Ctrl-Z* | suspend program
+*Ctrl-R* | search command history
+*ESC-.* | past last argument of previous command
+*Ctrl-K* | delete from here to end of line
+*Ctrl-B/Ctrl-F* | Page up and down
+*Ctrl-D/Ctrl-U* | Half page up and down
