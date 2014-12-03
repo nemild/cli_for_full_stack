@@ -127,7 +127,7 @@ ls -d */ | directories only
 ls -p | ack -v | files only
 ls -i1 | inode number
 
-Popular usages
+Popular usages  
 `ls -lah`  
 `ls -larth`  
 
@@ -147,7 +147,8 @@ cat -T | Show tabs
 Note: Don’t pipe a cat, instead cat < abc.txt
 
 #### less: Print a file with pagination
-used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search  
+used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search
+
 Command | Description
 :----: | ----
 less filname.txt | print file with pagination
@@ -343,8 +344,6 @@ units | convert between units
 hostname |
 mount /dev/sdb1 /u01 | mount device to directory
 
-man hier | get an explanation of the system directory structure
-
 ## [Advanced](#advanced)
 
 
@@ -363,6 +362,7 @@ time read | simple stopwatch
 ## [Sysadmin Basics](#sysadmin_basics)
 
 free | free space
+man hier | get an explanation of the system directory structure
 
 
 ## [vim basics](#vim_basics)
