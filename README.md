@@ -343,21 +343,253 @@ pbcopy / pbpaste | macintosh, pipe to/from these for clipboard, see alias sectio
 units | convert between units
 hostname |
 mount /dev/sdb1 /u01 | mount device to directory
+read var1 | set variable to stdin
 
 ## [Advanced](#advanced)
 
+#### ifconfig: Configure network interface
+```bash
+ifconfig -a # view all network interfaces
+ifconfig eth0 up # turn on
+ifconfig eth down # turn off
+ifconfig eth0 192.168.2.2
+```
+
+#### gcc
+```bash
+gcc -c abc.cpp # compile cpp
+gcc abc.o def.o -o def.out # link and create binary with filename, -o is output
+```
+
+#### xxd: convert binary to hex
+```bash
+xxd somefile.bin # can be used to then compare two binary files with diff
+xxd -i somefile.bin # create C array
+xxd -r # reverse operation
+```
+
+#### parallel: Run commands in parallel
+```bash
+# this is for non-BSD systems
+parallel command -- 1 2 3 # each item past the -- is passed to the
+command singly, with
+-n 3 # send 3 arguments at a time, default is 1
+-j 5 # max jobs in parallel
+parallel -- ls "cat abc.txt" "df -h" # run specified commands
+```
+
+#### xargs: execute multiple arguments
+```bash
+# run a command on a list of files, used typically from the piped output of another command (e.g. find and ls)
+ls | xargs cat # run cat on all files listed from ls
+-n 2 # 2 files per call
+-I abc # use abc as a value that will be replaced by the filename, sets to 1 file per all when using this
+-P 5 # parallel
+-0 # add this argument on when using with find -print0
+```
+
+#### ldd
+TODO
+
+#### egrep
+# same as grep -E, used for search by regular expressions
+
+#### rsync
+TODO
+
+#### netstat
+TODO
+
+#### iostat
+TODO
+
+#### pgrep: Find processes by name
+```bash
+pgrep mysql
+pgrep -n # most recent processes
+pgrep -n emacs # most recent emacs
+pgrep -u bob # only processes started by Bob
+pgrep -l # list out name as well, not just PID
+pgrep -v # inverts matching
+```
+
+#### awk
+TODO
+
+#### tr: Translate Characters (replace a character with another)
+```bash
+cat abc.txt | tr ' ' '\_' # replace
+tr "A-Za-z" "a-zA-Z" # reverse case
+tr "a-z" "A-Z" # make lowercase uppercase
+tr -d '\r' # delete character, useful when moving txt files between Windows and Linux
+tr -dc 'a-z A-Z \t \n '\32'' # invert delete
+tr -s '\n' # make multiple instance just a single instance
+```
+
+#### du: Disk Usage
+```bash
+du -hs # disk usage of directory, including subdirectories in pretty format
+```
+
+#### df: Disk Free
+```bash
+df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
+```
+
+#### time
+`time ls # run ls and profile time`
+wall/real time - can be less than some of system + user time, given parallelism  
+system time (system calls) vs user time (time spent running user requested command)  
+
+#### sleep
+`sleep 5 # sleep for 5 seconds then proceed`
+
+#### sed: Substitution
+```bash
+sed -e 's/day/night' # replace first day with night per line
+sed -e s/day/night/g' # replace all day with night
+sed -E # use regular expression
+sed -e s/[a-z]/(&)/ # & means use found section
+```
+
+#### seq: Sequence
+```bash
+seq 5 # print sequence of numbers starting at 1
+seq -s :abc 5
+```
+
+#### mktemp: Create Temp File
+```bash
+mktemp -t abc # use abc as template
+-d # make directory instead of file
+```
+
+#### watch: Execute a program periodically, showing output fullscreen
+```bash
+watch -n 5 tail /var/log/messages # runs every 5 seconds
+watch -d # highlight differences between successive updates
+watch -e # exit if the return value is non-zero
+```
+
+#### jot: Generate Data
+```bash
+jot NUM LOW HIGH STEP
+jot -b hello # repeat word
+jot -w hello # use as start
+jot -r # random
+jot -s’:’ # print data with string as separator (not newline)
+```
+
+
+#### lsof: Lists open files for active processes, including pipes and network sockets
+```bash
+# by default ORs results, not ANDs
+# a good tool to be used with strace
+# without arguments, lists all open files for default processes
+-a # AND the results, this is where the real power comes in
+lsof /some/dir/path
+lsof somefile.txt
+lsof -i # list IP Sockets
+lsof -iTCP
+lsof -iUDP # UDP is for media, when speed matters, but quality does not
+lsof -i :22 # specific port
+lso -i@172.16.12.5:21 # Show connections to a specific host
+lsof -u username
+lsof -u ^username # all users but username
+lsof -c top
+lsof -p 1232 # for pid
+lsof -p `pidof auditd`
+lsof -i @fw.google.com:2150=2180 # port range
+| grep LISTEN for ports that are awaiting connections
+| grep ESTABLISHED
+```
+
+#### strace: Trace system calls and commands (for non-BSD)
+# best article on this topic is [here](http://chadfowler.com/blog/2014/01/26/the-magic-of-strace/), dtruss is for Mac
+```bash
+-s 2000 # max 2000 characters per call
+-F # follow children
+strace -p 123 # use PID 123, for running process
+-o output.log # output results to file
+-c # incidence count by system call, can compare over time
+-T time each execution call
+# can man most system calls
+# can use lsof's FD column to find files
+```
+
+#### split: Split file
+```bash
+split -b 75m input.zip # cut into multiple files of 75m max
+cat `ls x*` > reassembled.zip
+```
+
+#### dtruss
+TODO
+
+#### openssl
+```bash
+openssl sha1 filename # get sha1 hash of filename
+openssl dgst -sha256
+openssl dgst -ripemd160
+```
+
+[Start of More Advanced?]
+#### tcpdump: Dump traffic on a network
+```bash
+# for a quick primer on TCP look here: TODO
+tcpdump -n # don't resolve names, keep IP addresses
+-X # displays both hex and ASCII content within the packet
+-S # absolute sequence numbers
+-s 96 # only takes first 96 by default, can change, 0 is all
+tcpdump -nS # Basic communication
+tcpdump -nnvvXS
+tcpdump -nnvvXSs 1514
+tcpdump host 2.3.4.5 # same as both src and dst below
+tcpdump src 2.3.4.5
+tcpdump dst 2.3.4.5
+tcpdump port 3389
+tcpdump portrange 21-23
+-w capturefile # write to file
+-r capturefile # read from file
+```
+
+#### nmap: Host Discovery and Port Scanning
+```bash
+/ uses SYN by default, Discovery mode of host (port 80 is used), then Scan
+nmap localhost
+nmap 192.16.10.0
+nmap -p1-10000 # scan range of ports, default is 1663 ports
+nmap -p22,23,10000-15000 192.168.10.0/24 # scan selected ports
+nmap -sU -pT:21,22,23,U:53,137 192.168.10.0/24 # for UDP
+nmap -sF # FIN scan
+nmap -sX # XMAS scan, Christmas Tree packet has all options on, used primarily in scans and DOS
+nmap -sA # ACK scan
+nmap -sN # NULL scan
+nmap -sP abc.com # ping scan, sends ICMP echo and TCP ACK
+nmap -p10000 -sV host # gives version information of service on port
+nmap -P0 hostname # just scan, don't worry about discovery
+nmap -O hostname # tells you Operating System information
+nmap -oA # output to all formats below
+nmap -oN # .nmap output, human readable
+nmap -oG # .gnmap, grepable
+nmap -oX # .xml, XML
+nmap -resume # can resume when a crash
+nmap -vv
+/ can vary scan speed
+-T Sneaky # 15 seconds, serial
+-T Polite # 4 seconds, serial
+-T # Aggressive, parallel
+```
 
 ## [Command Cocktails](#command_cocktails)
-Command | Description
-:-----: | -----
-grep . *.txt |
-diff <(ls) <(ls) | compare two commands, rather than having to write to a file first
-read var1 | take stdin to variable
-wc < abc.txt | use this instead of cat abc.txt \| wc, saves a new process, important only for big files; don't pipe a cat
-host | get ip of domain
-(head -5; tail -5) < data | explore first 5 and last 5 lines
-head -3 data* \| cat | list out first three lines of all files
-time read | simple stopwatch
+```bash
+grep . *.txt # prints all matched files in directory, and prepends filename to each line
+diff <(ls) <(ls) # compare two commands, rather than having to write to a file first
+wc < abc.txt # use this instead of cat abc.txt \| wc, saves a new process, important only for big files; don't pipe a cat
+(head -5; tail -5) < data # explore first 5 and last 5 lines
+head -3 data* | cat # list out first three lines of all files
+time read # simple stopwatch
+```
 
 ## [Sysadmin Basics](#sysadmin_basics)
 
@@ -404,13 +636,13 @@ use htop, not top when possible
 `top -U johndoe`
 
 #### ps: Process status
-Command | Description
-:-----: | -----
-ps aux | standard usage, display info about all users processes
-ps -u abc,def | users
-ps -f -p 123 | find by process id
-ps -f -ppid 123 | find by parent process id
-ps aux --sort pmem | sort by column
+```bash
+ps aux # standard usage, display info about all users processes
+ps -u abc,def # users
+ps -f -p 123 # find by process id
+ps -f -ppid 123 # find by parent process id
+ps aux --sort pmem # sort by column
+```
 
 #### Other commands
 Command | Description
@@ -425,6 +657,7 @@ w | users on system, show who is logged in and what they're doing
 uptime | time system has been up
 free | free space
 man hier | get an explanation of the system directory structure
+host | get ip of domain
 
 
 ## [vim basics](#vim_basics)
@@ -456,7 +689,8 @@ U | Undo all on line
 dd/p | cut and paste
 / | search for search term going forward
 ? | search for search term going backward
-n (forward) N (backward)
+n | forward when looking for a search term
+N | backward when looking for a search term
 gg | top of file
 G | bottom of file
 25G | Goto line
