@@ -361,6 +361,68 @@ time read | simple stopwatch
 
 ## [Sysadmin Basics](#sysadmin_basics)
 
+#### chown: Change ownership (chown)
+`chown bob file.txt`
+
+#### chmod: Change mode
+read is 4, write is 2, exec is 1  
+user (u), group (g), other/everyone else (o), all (a)  
+```bash
+chmod 755 # rwx, rx, rx
+chmod 644 # rw, r, r
+chmod +x abc.out
+chmod -x abc.out
+chmod g+x abc.out
+chmod go-rwx file.txt
+chmod -R # apply recursively to all files in the subdirectory
+```
+
+#### chgrp: Change Group
+`chgrp webmasters file.txt`
+
+#### su: Become Super User
+```bash
+su - johndoe -c 'ls' # run command as user
+su - johndoe # switch to user
+```
+
+#### passwd: Change password
+```bash
+passwd # change password
+passwd -d johndoe # disable password
+```
+
+#### shutdown: Shutdown System
+```
+shutdown -r now
+shutdown now
+shutdown -h +10
+```
+
+#### top: Display and update sorted information about processes
+use htop, not top when possible  
+`top -U johndoe`
+
+#### ps: Process status
+Command | Description
+:-----: | -----
+ps aux | standard usage, display info about all users processes
+ps -u abc,def | users
+ps -f -p 123 | find by process id
+ps -f -ppid 123 | find by parent process id
+ps aux --sort pmem | sort by column
+
+#### Other commands
+Command | Description
+:-----: | -----
+groups | Outputs the user groups of which your account belongs to.
+adduser johndoe | need super user privileges
+passwd -a demo sudo | 
+service ssh restart | restart service
+finger username | info on user, including logins
+last, last username | list of last logged in users
+w | users on system, show who is logged in and what they're doing
+uptime | time system has been up
 free | free space
 man hier | get an explanation of the system directory structure
 
