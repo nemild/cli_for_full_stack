@@ -105,8 +105,7 @@ cd | go to home
 cd ~ | go to home
 cd - | go to previous directory
 cd .. | go up one directory
-(cd ~/asd && ls) | execute command in subshell, at end you are back in
-your current directory
+(cd ~/asd && ls) | execute command in subshell, at end you are back in your current directory
 there’s also `pushd` and `popd` when you want to push your current location on the stack before moving to the new directory
 
 #### mkdir: Make Directory
@@ -129,8 +128,8 @@ ls -p | ack -v | files only
 ls -i1 | inode number
 
 Popular usages
-`ls -lah`
-`ls -larth`
+`ls -lah`  
+`ls -larth`  
 
 #### man: Manual
 Command | Description
@@ -148,7 +147,7 @@ cat -T | Show tabs
 Note: Don’t pipe a cat, instead cat < abc.txt
 
 #### less: Print a file with pagination
-used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search
+used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search  
 Command | Description
 :----: | ----
 less filname.txt | print file with pagination
@@ -181,6 +180,7 @@ grep abc file1.txt file2.txt | can be used with multiple files, abc is substring
 -C | 3 lines before and after
 -n | show line numbers
 -w | search for component words, not the entire substring
+TODO Popular combinations  
 
 #### find: Walk a file hierarchy (search for files etc. matching certain criteria, can also be used with xargs/parallel )
 Command | Description
@@ -190,8 +190,7 @@ find . -name “abc” 2>/dev/null | output to dev null when doing global search
 -iname "abc.txt" OR -iname "*.txt" | search for case insensitive
 -mtime -7 | modified time is within seven days previous to today
 -print0 | used with xargs -0 option, can pipe find results to xargs
--type l/f/d | search for a type of item, f = file, l = symbolic link, d
-= directory
+-type l/f/d | search for a type of item, f = file, l = symbolic link, d = directory
 -not | invert all filtering criteria
 find abc/ | lists everything recursively in directory
 find -inum 16187430 | inode number
@@ -219,6 +218,7 @@ sort -n | sort according to numerical value
 
 #### uniq
 Note: only compares adjacent lines for equality, so typically need to sort in advance  
+
 Command | Description
 :----: | ----
 uniq -c | give incidence of line, will show repeated only once
@@ -234,6 +234,7 @@ wc -l | line count only
 
 #### ssh: Open SSH client
 set the ~/.ssh/config file to make life easier for sshing into commonly used servers
+
 Command | Description
 :----: | ----
 ssh -i ~/.ec2/abc.pem hello@100.1.24.33 | ssh into server with public key at path
@@ -267,6 +268,7 @@ Command | Description
 
 #### nl: Line Numbering
 is there a reason to use this rather than cat?
+
 Command | Description
 :----: | ----
 nl -b a | number all lines
@@ -275,7 +277,7 @@ nl -b t | number non-empty lines
 #### scp: Secure Copy
 Command | Description
 :----: | ----
-scp
+scp server1:~/abc/def.txt . | base usage
 scp -C | compression enable
 scp -i abc.pem | use public key
 scp -l 5000 | limits bandwith used, Kbit/s
@@ -313,12 +315,14 @@ cut -c1- | extract from 1 to end
 
 #### tee: copies standard input to standard output, making a copy in file
 used when you need to store intermediate output  
+
 Command | Description
 :----: | ----
 ls | tee abc.txt | something_else
 
 #### jq: JSON Command Line Tool
 not standard, and yes there could be a large debate of this command, but very useful in today’s world of API’s  
+
 Command | Description
 :----: | ----
 curl http://www.espn.com/abc.json | jq '.' | no, espn does not have an API
@@ -334,11 +338,10 @@ pidof |
 mcookie | generate pseudo random string
 whatis command | short description of command
 apropos command | find commands like this
-pbcopy / pbpaste | macintosh
-units: convert between units
-free
-hostname
-mount /dev/sdb1 /u01
+pbcopy / pbpaste | macintosh, pipe to/from these for clipboard, see alias section for Linux
+units | convert between units
+hostname |
+mount /dev/sdb1 /u01 | mount device to directory
 
 man hier | get an explanation of the system directory structure
 
@@ -358,6 +361,8 @@ head -3 data* \| cat | list out first three lines of all files
 time read | simple stopwatch
 
 ## [Sysadmin Basics](#sysadmin_basics)
+
+free | free space
 
 
 ## [vim basics](#vim_basics)
