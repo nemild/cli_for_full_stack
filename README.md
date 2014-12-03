@@ -391,7 +391,7 @@ ls | xargs cat # run cat on all files listed from ls
 #### ldd
 TODO
 
-#### egrep
+#### egrep  
 # same as grep -E, used for search by regular expressions
 
 #### rsync
@@ -437,7 +437,7 @@ df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
 ```
 
 #### time
-`time ls # run ls and profile time`
+`time ls # run ls and profile time`  
 wall/real time - can be less than some of system + user time, given parallelism  
 system time (system calls) vs user time (time spent running user requested command)  
 
@@ -504,8 +504,8 @@ lsof -i @fw.google.com:2150=2180 # port range
 | grep ESTABLISHED
 ```
 
-#### strace: Trace system calls and commands (for non-BSD)
-# best article on this topic is [here](http://chadfowler.com/blog/2014/01/26/the-magic-of-strace/), dtruss is for Mac
+#### strace: Trace system calls and commands (for non-BSD)  
+best article on this topic is [here](http://chadfowler.com/blog/2014/01/26/the-magic-of-strace/), dtruss is for Mac  
 ```bash
 -s 2000 # max 2000 characters per call
 -F # follow children
