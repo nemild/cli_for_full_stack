@@ -165,7 +165,7 @@ head -n 100 # number of lines
 ```bash
 tail filename.txt # standard usage
 tail -n 5 # last 5 lines
-tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs)
+tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs), see the less +F command for a potential replacement
 ```
 
 #### grep: File Pattern Searcher
