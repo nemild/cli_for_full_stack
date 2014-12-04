@@ -1,12 +1,12 @@
 # CLI for Full Stack Engineers
-Goal of this doc: Prioritized list of the most important CLI commands for full stack engineers
+A prioritized list of the most important CLI commands for full stack engineers
 
 #### Key Principles
 * **Less is more**: This is NOT a reference list, it is a prioritized list that totally ignores less used commands or command flags (this is the main reason this document exists)
 * **Audience**: The audience is a full stack (or part stack) engineer, NOT a sysadmin
-* **Cocktails**: This doc includes command cocktails (multi commands, like a series of piped commands); man pages don’t show this, so this is one reason for this doc
+* **Cocktails**: This doc includes command cocktails (multi commands, like a series of piped commands); man pages don’t show this, so this is one reason for this doc (one way to think about this doc is to take the entire histogram of commands used by all developers today - and concentrate on the most important parameterizations of the most important commands)
 * **Terseness**: Use the minimal amount of words to explain something, this is not documentation
-* **Context**: It might be relevant to explain when or how something should be used if it is non-obvious
+* **Context**: It might be relevant to explain when or how something should be used if it is non-obvious (or even link to the relevant doc - see strace)
 * There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server)
 * This doc includes other basics of the CLI (keyboard shortcuts and very basic vim) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
 
@@ -14,7 +14,6 @@ Goal of this doc: Prioritized list of the most important CLI commands for full s
 * Add additional commands or flags that you think are critical
 * Add command cocktails (e.g., multi piped commands) that you think full stack engineers should know or will benefit from
 * Rearrange the doc and flags for a given command to be in the order of rough importance/usage
-* PLEASE USE A COLOR OTHER THAN BLACK WHEN ADDING, SO WE CAN TRACK ADDITIONS
 
 #### General Comments
 * Ideally, put general comments on HN, but if you have to you can add them in this section or as comment bubbles
@@ -170,17 +169,18 @@ tail -f # don't exit, but keep outputting data as appended (used especially in v
 
 #### grep: File Pattern Searcher
 ```bash
-grep abc file1.txt file2.txt # can be used with multiple files, abc is substring to search for
--r # recursive (all files in directory)
--v # invert
--i # ignore case
--c # incidence count
--x # exact match
--A # 3 lines after
--B # 3 lines before
--C # 3 lines before and after
--n # show line numbers
--w # search for component words, not the entire substring
+grep abc --color file1.txt file2.txt # can be used with multiple files, abc is substring to search for
+grep substring -ri --color . # recursive, ignore case, highlight match in color
+grep -v # invert
+grep -c # incidence count
+grep -x # exact match
+grep -A # 3 lines after
+grep -B # 3 lines before
+grep -C # 3 lines before and after
+grep -n # show line numbers
+grep -w # search for component words, not the entire substring
+grep -l # list files with matching content
+grep -E # interpret pattern as a regular expression, can also use egrep (TODO: Add some popular regular expressions people use)
 ```
 TODO Popular combinations  
 
@@ -240,6 +240,7 @@ set the ~/.ssh/config file to make life easier for sshing into commonly used ser
 ```bash
 ssh -i ~/.ec2/abc.pem hello@100.1.24.33 # ssh into server with public key at path
 ssh hostname "cd abc && ls -lah" # ssh then run command
+ssh -D 1234 hostname # use hostname as a SOCKS proxy on localhost:1234
 ```
 
 #### mv: Move file from src to dest
@@ -288,22 +289,27 @@ scp -r # recursively copy entire directories
 scp -v # verbose mode
 ```
 
-#### curl: Transfer a URL
+#### cURL: Transfer a URL
+Certain commands taken from [here](http://zaiste.net/2012/11/introduction_to_curl/)
 ```bash
 curl ifconfig.me/ip # get IP
 curl ifconfig.me/port # get port
-curl --data "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # 
+curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server, automatically POST, can also separate by separate -d arguments rather than an &
+curl -d '{"user": {"name": "zaiste"}}' -H "Content-Type: application/json" http://server/
 curl --data-urlencode # 
 curl --form upload=@localfilename --form press=OK [URL] |
--o abc.html # output to file
--v # verbose
--head # head only
+curl http://www.example.com/index.html -o abc.html # output to file
+curl -O http://www.example.com/index.html # output to remote filename on local, in this case index.html
+curl -v # verbose
+curl -head # head only
 ```
 
 #### wget: Network Downloader
 ```bash
-wget -O abc.html http://www.microsoft.com # output to file
-wget -i download-file-list.txt # download entire file list
+wget -O abc.html http://www.example.com # output to file
+wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted downlaod
+wget -i download-file-list.txt # download entire file list, file list has URLs listed one per line
+wget --mirror -p --convert-links -P ./localdirectory http://www.example.com/index.html # convert links converts links to local, -p downloads all files to view, -P saves to local directory
 ```
 
 #### cut: Cut out selected portions of each line of a file
@@ -346,7 +352,6 @@ mount /dev/sdb1 /u01 | mount device to directory
 read var1 | set variable to stdin
 
 ## [Advanced](#advanced)
-
 #### ifconfig: Configure network interface
 ```bash
 ifconfig -a # view all network interfaces
@@ -359,13 +364,6 @@ ifconfig eth0 192.168.2.2
 ```bash
 gcc -c abc.cpp # compile cpp
 gcc abc.o def.o -o def.out # link and create binary with filename, -o is output
-```
-
-#### xxd: convert binary to hex
-```bash
-xxd somefile.bin # can be used to then compare two binary files with diff
-xxd -i somefile.bin # create C array
-xxd -r # reverse operation
 ```
 
 #### parallel: Run commands in parallel
@@ -388,19 +386,13 @@ ls | xargs cat # run cat on all files listed from ls
 -0 # add this argument on when using with find -print0
 ```
 
-#### ldd
-TODO
-
-#### egrep  
-same as grep -E, used for search by regular expressions
+#### ldd: print shared library dependencies
+```bash
+# used to determine shared library dependencies for binaries, useful when attempting to copy a binary from one system to another
+ldd -v # verbose
+```
 
 #### rsync
-TODO
-
-#### netstat
-TODO
-
-#### iostat
 TODO
 
 #### pgrep: Find processes by name
@@ -462,6 +454,7 @@ seq -s :abc 5
 ```bash
 mktemp -t abc # use abc as template
 -d # make directory instead of file
+# TODO: How to make a file with a certain extension
 ```
 
 #### watch: Execute a program periodically, showing output fullscreen
@@ -479,7 +472,6 @@ jot -w hello # use as start
 jot -r # random
 jot -s’:’ # print data with string as separator (not newline)
 ```
-
 
 #### lsof: Lists open files for active processes, including pipes and network sockets
 ```bash
@@ -502,6 +494,13 @@ lsof -p `pidof auditd`
 lsof -i @fw.google.com:2150=2180 # port range
 | grep LISTEN for ports that are awaiting connections
 | grep ESTABLISHED
+```
+
+#### xxd: convert binary to hex
+```bash
+xxd somefile.bin # can be used to then compare two binary files with diff
+xxd -i somefile.bin # create C array
+xxd -r # reverse operation
 ```
 
 #### strace: Trace system calls and commands (for non-BSD)  
@@ -580,6 +579,12 @@ nmap -vv
 -T Polite # 4 seconds, serial
 -T # Aggressive, parallel
 ```
+
+#### netstat
+TODO
+
+#### iostat
+TODO
 
 ## [Command Cocktails](#command_cocktails)
 ```bash
