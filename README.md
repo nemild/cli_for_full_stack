@@ -696,7 +696,7 @@ G | bottom of file
 25G | Goto line
 % | go to matching parentheses
 3igoESC twice | insert go 3 times
-/| next/previous of the word that you are at
+/ # | next/previous of the word that you are at
 ^F, ^B | page up and page down
 :w | save
 :wq | save and quit
