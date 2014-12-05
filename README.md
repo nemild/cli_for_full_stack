@@ -1,6 +1,11 @@
 # CLI for Full Stack Engineers
 A prioritized list of the most important CLI commands for full stack engineers
 
+#### How you can help
+* Add additional commands or flags that you think are critical, **especially common usages (e.g., compound arguments) (which don't appear in man pages)**
+* Add command cocktails (e.g., multi piped commands) that you think full stack engineers should know or will benefit from
+* Rearrange the doc and flags for a given command to be in the order of rough importance/usage, and comment if there's something too esoteric in this doc
+
 #### Key Principles
 * **Less is more**: This is NOT a reference list, it is a prioritized list that totally ignores less used commands or command flags (this is the main reason this document exists)
 * **Audience**: The audience is a full stack (or part stack) engineer, NOT a sysadmin
@@ -10,18 +15,13 @@ A prioritized list of the most important CLI commands for full stack engineers
 * There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server)
 * This doc includes other basics of the CLI (keyboard shortcuts and very basic vim) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
 
-#### How you can help
-* Add additional commands or flags that you think are critical
-* Add command cocktails (e.g., multi piped commands) that you think full stack engineers should know or will benefit from
-* Rearrange the doc and flags for a given command to be in the order of rough importance/usage
-
 #### General Comments
 * Ideally, put general comments on HN, but if you have to you can add them in this section or as comment bubbles
 * If you want to debate something or just flame, HN is the best place
 
 ##### Authors
 * Nemil Dalal (nemild at gmail)
-* *[Add your name if you spend more than an hour on this doc]*
+* *[If you spend more than 5 mins on any single command, add your name here with what you contributed to]*
 
 ## Table of Contents
 <a href="#keyboard_shortcuts">Keyboard Shortcuts</a>  
@@ -42,19 +42,21 @@ Keyboard Shortcut | Description
 *Ctrl-A* | go to start of line
 *Ctrl-E* | go to end of line
 *Ctrl-W* | cut the previous word
-*Ctrl-K* | Paste the word
 *Ctrl -* | undo
-*Ctrl-U* | cut the line
+*Ctrl-U* | cut from cursor to start of line
 *Ctrl-U/Ctrl-Y* | Cut line, write text and then paste line after new text
+*Ctrl-XX* | Move between start of line and current cursor position
 *Ctrl-X/Ctrl-E* | use text editor to input command, used for long or multiline commands, can also use `fc`
 *Ctrl-L* | clear screen
 *Ctrl-D* | terminate program
 *Ctrl-Z* | suspend program
-*Ctrl-R* | search command history
+*Ctrl-R* | search command history, start typing command, ctrl-r again to cycle through other matches in reverse chronological order
+*Ctrl-G* | Escape from search command mode (may be just easier to use Ctrl-C)
 *ESC-.* | past last argument of previous command
 *Ctrl-K* | delete from here to end of line
 *Ctrl-B/Ctrl-F* | Page up and down
 *Ctrl-D/Ctrl-U* | Half page up and down
+*Ctrl-S/Ctrl-Q* | stop output to screeen (for verbose commands) / resume output to screen
 
 ## [Getting around the command line](#getting_around_the_command_line)
 #### Other Basics
@@ -169,8 +171,8 @@ tail -f # don't exit, but keep outputting data as appended (used especially in v
 
 #### grep: File Pattern Searcher
 ```bash
-grep abc --color file1.txt file2.txt # can be used with multiple files, abc is substring to search for
-grep substring -ri --color . # recursive, ignore case, highlight match in color
+grep substring --color file1.txt file2.txt # search for substring can be used with multiple files
+grep substring -ri --color . # recursive, ignore case, highlight match in color, a common usage
 grep -v # invert
 grep -c # incidence count
 grep -x # exact match
@@ -182,7 +184,7 @@ grep -w # search for component words, not the entire substring
 grep -l # list files with matching content
 grep -E # interpret pattern as a regular expression, can also use egrep (TODO: Add some popular regular expressions people use)
 ```
-TODO Popular combinations  
+TODO Popular usages  
 
 #### find: Walk a file hierarchy (search for files etc. matching certain criteria, can also be used with xargs/parallel )
 ```bash
@@ -196,6 +198,7 @@ find . -name “abc” 2>/dev/null # output to dev null when doing global search
 find abc/ # lists everything recursively in directory
 find -inum 16187430 # inode number
 ```
+TODO Popular combinations  
 
 #### tar: Archive file or path
 ```bash
@@ -459,7 +462,8 @@ mktemp -t abc # use abc as template
 
 #### watch: Execute a program periodically, showing output fullscreen
 ```bash
-watch -n 5 tail /var/log/messages # runs every 5 seconds
+watch -n 5 tail /var/log/messages # runs every 5 seconds after previous run completed
+watch --precise -n 5 # tries to run 5 seconds from previous start
 watch -d # highlight differences between successive updates
 watch -e # exit if the return value is non-zero
 ```
