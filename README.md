@@ -43,7 +43,7 @@ Keyboard Shortcut | Description
 *Ctrl-E* | go to end of line
 *Ctrl-W* | cut the previous word
 *Ctrl -* | undo
-*Ctrl-U* | cut from cursor to start of line
+*Ctrl-U* | clears the line before the cursor position.
 *Ctrl-U/Ctrl-Y* | Cut line, write text and then paste line after new text
 *Ctrl-XX* | Move between start of line and current cursor position
 *Ctrl-X/Ctrl-E* | use text editor to input command, used for long or multiline commands, can also use `fc`
@@ -53,10 +53,12 @@ Keyboard Shortcut | Description
 *Ctrl-R* | search command history, start typing command, ctrl-r again to cycle through other matches in reverse chronological order
 *Ctrl-G* | Escape from search command mode (may be just easier to use Ctrl-C)
 *ESC-.* | past last argument of previous command
-*Ctrl-K* | delete from here to end of line
+*Ctrl-K* | Kill the line after the cursor
 *Ctrl-B/Ctrl-F* | Page up and down
 *Ctrl-D/Ctrl-U* | Half page up and down
 *Ctrl-S/Ctrl-Q* | stop output to screeen (for verbose commands) / resume output to screen
+*Ctrl - T* | swap previous two characters (used for misspellings)
+*Meta - T* | swap previous two words
 
 ## [Getting around the command line](#getting_around_the_command_line)
 #### Other Basics
@@ -149,7 +151,7 @@ Note: Don’t pipe a cat, instead cat < abc.txt
 ```
 
 #### less: Print a file with pagination
-used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search
+used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search. q to quit, arrow keys to move up and down
 
 ```bash
 less filename.txt # print file with pagination
@@ -158,15 +160,30 @@ less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to ha
 
 #### head: Display the first part of a file
 ```bash
-head filename.txt # standard usage
-head -n 100 # number of lines
+
+head -100 abc.txt # number of lines, can also do -n 100, default is 10 when not specified
+head -c50 # first 50 characters
+head abc.txt def.txt # multiple files
+head -q *txt *gbk # heads of multiple files w/o delimiters
 ```
 
 #### tail: Display the last part of a file
 ```bash
-tail filename.txt # standard usage
-tail -n 5 # last 5 lines
+# head commands from above apply here
 tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs), see the less +F command for a potential replacement
+```
+
+#### echo: Write arguments to the standard output
+```bash
+echo "line1\nline2" >> .bash_profile # append string to end of .bash_profile, quick way to edit
+echo "line1\nline2" > output.txt # quick way to create file with text, compare to touch and then nano/vi
+```
+
+#### ln: Make link (used primarily for symbolic link)
+```bash
+ln -s /a.out b.out # create symbolic link, a pointer to the original file - use to create a pointer rather than a deep copy, ls -l will show what a symbolic link points to
+ln -sb # backup of existing files if overwriting
+ln -sf # if target file link exists, unlink so that the new link may occur
 ```
 
 #### grep: File Pattern Searcher
@@ -181,7 +198,7 @@ grep -B # 3 lines before
 grep -C # 3 lines before and after
 grep -n # show line numbers
 grep -w # search for component words, not the entire substring
-grep -l # list files with matching content
+grep -l # list filenames with matching content
 grep -E # interpret pattern as a regular expression, can also use egrep (TODO: Add some popular regular expressions people use)
 ```
 TODO Popular usages  
@@ -216,6 +233,7 @@ tar -cvf . ~/abc.tar # compress, verbose, compress to filename provided
 ```bash
 sort # ascending
 sort -r # descending, z to a, 10000 to 1
+sort -R # randomize
 sort -f # ignore case
 sort -u # unique only
 sort -n # sort according to numerical value
@@ -235,6 +253,7 @@ uniq -i # case insensitive
 ```bash
 wc -w # word count only
 wc -l # line count only
+wc -L # longest line length, used often for style in code, where 80 lines max may be an accepted norm in a team
 ```
 
 #### ssh: Open SSH client
@@ -255,8 +274,8 @@ mv hello.{txt,old} # quick rename
 #### rm: Remove file
 ```bash
 rm abc.txt # base usage, remove file
-rm -r # recursive deletion (including subdirectories)
-rm -f # force delete, don’t prompt
+rm -rf abc # recursive deletion (including subdirectories), f is force delete, use with caution
+rm -i # prompt before deleting
 rm !(*.foo\|*.bar\|*.baz) # delete everything but
 ```
 
@@ -313,6 +332,7 @@ wget -O abc.html http://www.example.com # output to file
 wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted downlaod
 wget -i download-file-list.txt # download entire file list, file list has URLs listed one per line
 wget --mirror -p --convert-links -P ./localdirectory http://www.example.com/index.html # convert links converts links to local, -p downloads all files to view, -P saves to local directory
+wget -w 2 -r -np -k -p http://www.stanford.edu/class/cs106b # recursively download an entire site, waiting 2 seconds between hits (courtesy Stanford Startup Engineering class)
 ```
 
 #### cut: Cut out selected portions of each line of a file
@@ -328,6 +348,8 @@ cut -c1- # extract from 1 to end
 used when you need to store intermediate output  
 ```bash
 ls | tee abc.txt | something_else
+ls | tee -a abc.txt # append to the file, rather than overwrite
+tee abc.txt def.txt # output to multiple files
 ```
 
 #### jq: JSON Command Line Tool
@@ -340,6 +362,8 @@ curl http://www.espn.com/abc.json # jq '.' # no, espn does not have an API
 #### Other commands
 Command | Description
 :----: | ----
+pwd | print working directory
+touch abc.txt | create empty file
 date / date -r 1231006505 | for unix epoch time
 cal / cal 3 1973 | calendar of current month
 dirname/basename | basename will strip suffix provided as second argument
@@ -353,6 +377,8 @@ units | convert between units
 hostname |
 mount /dev/sdb1 /u01 | mount device to directory
 read var1 | set variable to stdin
+ping www.google.com | see if a site is up and you can connect to it
+yes | print yes forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
 
 ## [Advanced](#advanced)
 #### ifconfig: Configure network interface
@@ -369,7 +395,7 @@ gcc -c abc.cpp # compile cpp
 gcc abc.o def.o -o def.out # link and create binary with filename, -o is output
 ```
 
-#### parallel: Run commands in parallel
+#### [parallel](#parallel): Run commands in parallel
 ```bash
 # this is for non-BSD systems
 parallel command -- 1 2 3 # each item past the -- is passed to the
@@ -377,6 +403,7 @@ command singly, with
 -n 3 # send 3 arguments at a time, default is 1
 -j 5 # max jobs in parallel
 parallel -- ls "cat abc.txt" "df -h" # run specified commands
+# split is used with parallel, as split can break up a file before you farm it out to multiple servers
 ```
 
 #### xargs: execute multiple arguments
@@ -396,7 +423,11 @@ ldd -v # verbose
 ```
 
 #### rsync
-TODO
+```bash
+# used rather than scp when want more complex usage - e.g., can create a directory at the destination if it doesn't already exist
+rsync -avz server:abc/ .# recursively transfer all files, using compression (z), plus archive mode (a - preserves symbolic links, dates) and verbose (v)
+rsync -avp # preserve permissions
+```
 
 #### pgrep: Find processes by name
 ```bash
@@ -409,6 +440,8 @@ pgrep -v # inverts matching
 ```
 
 #### awk
+[awk one liners](http://www.pement.org/awk/awk1line.txt)
+
 TODO
 
 #### tr: Translate Characters (replace a character with another)
@@ -424,6 +457,7 @@ tr -s '\n' # make multiple instance just a single instance
 #### du: Disk Usage
 ```bash
 du -hs # disk usage of directory, including subdirectories in pretty format
+du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
 ```
 
 #### df: Disk Free
@@ -521,6 +555,7 @@ strace -p 123 # use PID 123, for running process
 ```
 
 #### split: Split file
+This command is often used in concert with [paralle](#parallel): split breaks up a file (like a data CSV), and then parallel lets you process each section concurrently
 ```bash
 split -b 75m input.zip # cut into multiple files of 75m max
 cat `ls x*` > reassembled.zip
@@ -601,6 +636,38 @@ time read # simple stopwatch
 ```
 
 ## [Sysadmin Basics](#sysadmin_basics)
+This typically means thing related to user management, filesystem, or the general system.
+
+#### sudo
+sudo command # become a root temporarily (to execute a command), prompts for password when first typed and then won't ask for password again for a certain window during that terminal session
+
+#### Package management - apt-get and brew
+```bash
+# apt-get is the main package manger for Ubuntu Linux
+sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
+sudo apt-get remove g++ # remove package
+sudo apt-get update # update list of packages available
+```
+
+```bash 
+# Homebrew is a popular package manager for Mac, can also use port
+brew install formula # install a formula, you should not have to use sudo with brew
+brew remove formula
+brew update formula
+brew search formula
+```
+
+```bash
+# can also install from source, this is the preferred way so you are not clobbering an existing package, and so it is easy to delete if needed
+./configure --prefix=$HOME/my-sqlite-dir # pick whatever name you want
+make
+make install
+
+# else, you can do this
+./configure
+make
+sudo make install
+```
 
 #### chown: Change ownership (chown)
 `chown bob file.txt`
@@ -611,6 +678,7 @@ user (u), group (g), other/everyone else (o), all (a)
 ```bash
 chmod 755 # rwx, rx, rx
 chmod 644 # rw, r, r
+chmod ugo+rwx abc.out # this commands shows everything at once, can also use minus (-)
 chmod +x abc.out
 chmod -x abc.out
 chmod g+x abc.out
@@ -656,10 +724,14 @@ ps aux --sort pmem # sort by column
 #### Other commands
 Command | Description
 :-----: | -----
+which command | determine which command path is used to run command, used when you may have multiple binaries
+env | print system environment variables
+export PATH=$HOME/bin:$PATH | add bin path to the existing path
 groups | Outputs the user groups of which your account belongs to.
 adduser johndoe | need super user privileges
 passwd -a demo sudo | 
 service ssh restart | restart service
+whoami | Prints your username
 finger username | info on user, including logins
 last, last username | list of last logged in users
 w | users on system, show who is logged in and what they're doing
@@ -667,6 +739,7 @@ uptime | time system has been up
 free | free space
 man hier | get an explanation of the system directory structure
 host | get ip of domain
+uname -a | get information about system
 
 
 ## [vim basics](#vim_basics)
@@ -715,7 +788,6 @@ G | bottom of file
 
 #### Commonly Used Aliases
 ```bash
-alias ll=”ls -larth”
 alias hist='history  | grep'
 alias webserver="python -m SimpleHTTPServer"
 
@@ -726,6 +798,29 @@ alias cd5="cd ../../../../.."
 alias cd4="cd ../../../.."
 alias cd3="cd ../../.."
 alias cd2="cd ../.."
+
+# these are courtesy of Stanford's Startup Engineering class
+alias ll="ls -alrtF --color"
+alias la="ls -A"
+alias l="ls -CF"
+alias dir='ls --color=auto --format=vertical'
+alias vdir='ls --color=auto --format=long'
+alias m='less'
+alias md='mkdir'
+alias cl='clear'
+alias du='du -ch --max-depth=1'
+alias treeacl='tree -A -C -L 2'
+
+alias em='emacs -nw'     # No X11 windows
+alias eqq='emacs -nw -Q' # No config and no X11
+
+export GREP_OPTIONS='--color=auto'
+export GREP_COLOR='1;31' # green for matches
+
+# Ensures cross-platform sorting behavior of GNU sort.
+# http://www.gnu.org/software/coreutils/faq/coreutils-faq.html#Sort-does-not-sort-in-normal-order_0021
+unset LANG
+export LC_ALL=POSIX
 
 alias pbcopy='xclip -selection clipboard' # on Linux to replicate the Mac functionality of command line clipboard
 alias pbpaste='xclip -selection clipboard -o' # on Linux to replicate the Mac functionality of command line clipboard
