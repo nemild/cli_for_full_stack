@@ -3,25 +3,24 @@ A prioritized list of the most important CLI commands for full stack engineers
 
 #### How you can help
 * Add additional commands or flags that you think are critical, **especially common usages (e.g., compound arguments) (which don't appear in man pages)**
-* Add command cocktails (e.g., multi piped commands) that you think full stack engineers should know or will benefit from
+* **Add command cocktails (e.g., multi piped commands)** that you think full stack engineers should know or will benefit from
 * Rearrange the doc and flags for a given command to be in the order of rough importance/usage, and comment if there's something too esoteric in this doc
 
 #### Key Principles
 * **Less is more**: This is NOT a reference list, it is a prioritized list that totally ignores less used commands or command flags (this is the main reason this document exists)
 * **Audience**: The audience is a full stack (or part stack) engineer, NOT a sysadmin
-* **Cocktails**: This doc includes command cocktails (multi commands, like a series of piped commands); man pages don’t show this, so this is one reason for this doc (one way to think about this doc is to take the entire histogram of commands used by all developers today - and concentrate on the most important parameterizations of the most important commands)
+* **Cocktails**: This doc includes command cocktails (multi commands, like a series of piped commands); man pages don’t show this, so this is one reason for this doc (one way to think about this doc is to take the entire histogram of commands used by (or that ideally should be used by) all full stack developers today - and concentrate on the most important parameterizations of the most important commands)
 * **Terseness**: Use the minimal amount of words to explain something, this is not documentation
 * **Context**: It might be relevant to explain when or how something should be used if it is non-obvious (or even link to the relevant doc - see strace)
-* There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server)
+* There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server) - this probably needs to be better called out
 * This doc includes other basics of the CLI (keyboard shortcuts and very basic vim) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
 
 #### General Comments
-* Ideally, put general comments on HN, but if you have to you can add them in this section or as comment bubbles
-* If you want to debate something or just flame, HN is the best place
+* This doc appeared on Hacker News [here](http://news.ycombinator.com/)
 
 ##### Authors
 * Nemil Dalal (nemild at gmail)
-* *[If you spend more than 30 mins on this doc, add your name here with what you contributed to]*
+* *[If you spend more than 15 mins on this doc, add your name here]*
 
 ## Table of Contents
 <a href="#keyboard_shortcuts">Keyboard Shortcuts</a>  
@@ -57,8 +56,8 @@ Keyboard Shortcut | Description
 *Ctrl-B/Ctrl-F* | Page up and down
 *Ctrl-D/Ctrl-U* | Half page up and down
 *Ctrl-S/Ctrl-Q* | stop output to screeen (for verbose commands) / resume output to screen
-*Ctrl - T* | swap previous two characters (used for misspellings)
-*Meta - T* | swap previous two words
+*Ctrl-T* | swap previous two characters (used for misspellings)
+*Meta-T* | swap previous two words
 
 ## [Getting around the command line](#getting_around_the_command_line)
 #### Other Basics
@@ -128,7 +127,6 @@ ls -t # sort by time modified
 ls -S # sort files by size
 ls -d */ # directories only
 ls -p # ack -v # files only
-ls -i1 # inode number
 ```
 
 Popular usages  
@@ -139,7 +137,8 @@ Popular usages
 ```bash
 man command # shows manual page for command
 Ctrl-B/Ctrl-F # page up and down
-/searchterm # to search, can use standard vim commands including n and N to go forward and backward to searchterms
+/searchterm # to search, can use standard vim commands including n and N to go forward and backward to searchterms, use this to search for flags ('-n')
+# TODO: Any other feedback on using man pages effectively
 ```
 
 #### cat: Print a file
@@ -628,15 +627,15 @@ TODO
 ## [Command Cocktails](#command_cocktails)
 ```bash
 grep . *.txt # prints all matched files in directory, and prepends filename to each line
-diff <(ls) <(ls) # compare two commands, rather than having to write to a file first
+diff <(ls) <(ls) # compare ouput of two commands, rather than having to write each to a file first
 wc < abc.txt # use this instead of cat abc.txt \| wc, saves a new process, important only for big files; don't pipe a cat
 (head -5; tail -5) < data # explore first 5 and last 5 lines
 head -3 data* | cat # list out first three lines of all files
-time read # simple stopwatch
+time read # simple stopwatch, Ctrl-C to stop
 ```
 
 ## [Sysadmin Basics](#sysadmin_basics)
-This typically means thing related to user management, filesystem, or the general system.
+This section is for things related to user management, filesystem, or the general system.
 
 #### sudo
 ```bash
