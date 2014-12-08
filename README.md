@@ -21,7 +21,7 @@ A prioritized list of the most important CLI commands for full stack engineers
 
 ##### Authors
 * Nemil Dalal (nemild at gmail)
-* *[If you spend more than 5 mins on any single command, add your name here with what you contributed to]*
+* *[If you spend more than 30 mins on this doc, add your name here with what you contributed to]*
 
 ## Table of Contents
 <a href="#keyboard_shortcuts">Keyboard Shortcuts</a>  
@@ -169,7 +169,7 @@ head -q *txt *gbk # heads of multiple files w/o delimiters
 
 #### tail: Display the last part of a file
 ```bash
-# head commands from above apply here
+# head flags from above apply here
 tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs), see the less +F command for a potential replacement
 ```
 
@@ -215,7 +215,7 @@ find . -name “abc” 2>/dev/null # output to dev null when doing global search
 find abc/ # lists everything recursively in directory
 find -inum 16187430 # inode number
 ```
-TODO Popular combinations  
+TODO Popular usages  
 
 #### tar: Archive file or path
 ```bash
@@ -253,7 +253,7 @@ uniq -i # case insensitive
 ```bash
 wc -w # word count only
 wc -l # line count only
-wc -L # longest line length, used often for style in code, where 80 lines max may be an accepted norm in a team
+wc -L # longest line length, used often for style in code, where 80 lines max may be a desired norm in a team
 ```
 
 #### ssh: Open SSH client
@@ -639,9 +639,11 @@ time read # simple stopwatch
 This typically means thing related to user management, filesystem, or the general system.
 
 #### sudo
+```bash
 sudo command # become a root temporarily (to execute a command), prompts for password when first typed and then won't ask for password again for a certain window during that terminal session
+```
 
-#### Package management - apt-get and brew
+#### Package management - apt-get, brew, and install from source
 ```bash
 # apt-get is the main package manger for Ubuntu Linux
 sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
