@@ -7,9 +7,9 @@ A prioritized list of the most important CLI commands for full stack engineers
 * Rearrange the doc and flags for a given command to be in the order of rough importance/usage, and comment if there's something too esoteric in this doc
 
 #### Key Principles
-* **Less is more**: This is NOT a reference list, it is a prioritized list that totally ignores less used commands or command flags (this is the main reason this document exists)
+* **Less is more**: This is a prioritized list that totally ignores less used commands or command flags - it is NOT a reference list. This doc is meant to represent the entire histogram of commands used by (or that should be used by) all full stack developers today - and aims to concentrate on the most important parameterizations of the most important commands and command cocktails
 * **Audience**: The audience is a full stack (or part stack) engineer, NOT a sysadmin
-* **Cocktails**: This doc includes command cocktails (multi commands, like a series of piped commands); man pages don’t show this, so this is one reason for this doc (one way to think about this doc is to take the entire histogram of commands used by (or that ideally should be used by) all full stack developers today - and concentrate on the most important parameterizations of the most important commands)
+* **Cocktails**: This doc includes command cocktails (multi commands, like a series of piped commands); man pages don’t show this, so this is a core reason for this doc
 * **Terseness**: Use the minimal amount of words to explain something, this is not documentation
 * **Context**: It might be relevant to explain when or how something should be used if it is non-obvious (or even link to the relevant doc - see strace)
 * There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server) - this probably needs to be better called out
@@ -572,6 +572,7 @@ openssl dgst -ripemd160
 
 [Start of More Advanced?]
 #### tcpdump: Dump traffic on a network
+(Note: This needs to be culled)
 ```bash
 # for a quick primer on TCP look here: TODO
 tcpdump -n # don't resolve names, keep IP addresses
@@ -591,6 +592,7 @@ tcpdump portrange 21-23
 ```
 
 #### nmap: Host Discovery and Port Scanning
+(Note: This needs to be culled)
 ```bash
 / uses SYN by default, Discovery mode of host (port 80 is used), then Scan
 nmap localhost
@@ -617,12 +619,6 @@ nmap -vv
 -T Polite # 4 seconds, serial
 -T # Aggressive, parallel
 ```
-
-#### netstat
-TODO
-
-#### iostat
-TODO
 
 ## [Command Cocktails](#command_cocktails)
 ```bash
@@ -826,7 +822,3 @@ export LC_ALL=POSIX
 alias pbcopy='xclip -selection clipboard' # on Linux to replicate the Mac functionality of command line clipboard
 alias pbpaste='xclip -selection clipboard -o' # on Linux to replicate the Mac functionality of command line clipboard
 ```
-
-
-## [Bash Scripting](#bash_scripting)
-
