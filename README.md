@@ -15,9 +15,6 @@ A prioritized list of the most important CLI commands for full stack engineers
 * There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server) - this probably needs to be better called out
 * This doc includes other basics of the CLI (keyboard shortcuts and very basic vim) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
 
-#### General Comments
-* This doc appeared on Hacker News [here](http://news.ycombinator.com/)
-
 ##### Authors
 * Nemil Dalal (nemild at gmail)
 * *[If you spend more than 15 mins on this doc, add your name here]*
