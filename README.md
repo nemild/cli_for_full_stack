@@ -33,6 +33,10 @@ A prioritized list of the most important CLI commands for full stack engineers
 <a href="#vim_basics">Vim (Uber-)Basics</a>  
 <a href="#setup">Setup</a>  
 
+## Other Resources
+* [Bro Pages](http://bropages.org/): Lists popular options in a man page type format (used to augment several commands below)
+* [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
+
 ## [Keyboard Shortcuts](#keyboard_shortcuts)
 Keyboard Shortcut | Description
 :-------: | ---------
@@ -66,6 +70,7 @@ Keyboard Shortcut | Description
 #### Previous Commands or Arguments
 ```bash
 history # see list of previous typed commands
+history | grep command # list out previous calls with command, then do !123 to run where 123 is the number shown for the command
 !! # run previous command
 !105 # run command number 105 from history
 
@@ -97,7 +102,8 @@ Flag | Description
 -i | ignore case
 -w | ignore whitespace
 -u | user
--h | pretty format the size (from bytes to mb/kb/etc), don’t use this when sorting
+-h | pretty format the size (from bytes to mb/kb/etc), if using this when sorting, use sort -h (only non-Mac)
+--color | use color
 
 #### cd: Change Directory
 ```bash
@@ -123,20 +129,29 @@ ls -l # provide information (ownership, permissions, file size, modification dat
 ls -h # make disk usage info pretty (kb, mb, etc.) - not bytes
 ls -r # reverses order
 ls -t # sort by time modified
+ls -G # colorize
 ls -S # sort files by size
 ls -d */ # directories only
 ls -p # ack -v # files only
+ls | wc -l # number of items in directory (including subdirectories)
+ls -R . #recursively list the files and directories
+ls | grep -v *.rb # filter out unwanted results, like .rb files
 ```
 
 Popular usages  
 `ls -lah`  
-`ls -larth`  
+`ls -larthG`  
+`ls -ltr`  
 
 #### man: Manual
 ```bash
 man command # shows manual page for command
 Ctrl-B/Ctrl-F # page up and down
-/searchterm # to search, can use standard vim commands including n and N to go forward and backward to searchterms, use this to search for flags ('-n')
+/searchterm # to search forward, can use standard vim commands including n and N to go forward and backward to searchterms, use this to search for flags ('-n')
+?searchterm # search backward
+man ascii # ascii table
+man 2 ls # go to section 2 of ls, search for what each section number means
+# use with whatis and apropos, to determine what commands available are
 # TODO: Any other feedback on using man pages effectively
 ```
 
@@ -144,13 +159,12 @@ Ctrl-B/Ctrl-F # page up and down
 ```bash
 cat -n # number lines starting at 1, can also call nl -b a
 cat -b # number non-blank lines, can also call nl -b t
-cat -T # Show tabs
-Note: Don’t pipe a cat, instead cat < abc.txt
+cat -T # Show tabs in a file
+Note: Don’t pipe a cat ('cat hello | dosomething'), instead dosomething < abc.txt
 ```
 
 #### less: Print a file with pagination
-used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search. q to quit, arrow keys to move up and down
-
+used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search. q to quit, arrow keys to move up and down  
 ```bash
 less filename.txt # print file with pagination
 less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to have search terms highlighted
@@ -169,15 +183,21 @@ head -q *txt *gbk # heads of multiple files w/o delimiters
 ```bash
 # head flags from above apply here
 tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs), see the less +F command for a potential replacement
+tail -F # same as -f except If the file is replaced or truncated, follow the new file that is now pointed to by the filename
+tail -f "my_server.log" | grep "my process" # Filter lines containing a match for "my process" from a text stream
 ```
 
 #### echo: Write arguments to the standard output
 ```bash
 echo "line1\nline2" >> .bash_profile # append string to end of .bash_profile, quick way to edit
 echo "line1\nline2" > output.txt # quick way to create file with text, compare to touch and then nano/vi
+echo $var # print shell variable
+echo $(pwd) >> log # way to run a command and append to file
+echo "ls -l" | at midnight # execute command at a certain time
+echo {a..z} # print a through z, can be used for numbers as well
 ```
 
-#### ln: Make link (used primarily for symbolic link)
+#### ln: Make link (used primarily for symbolic or soft link)
 ```bash
 ln -s /a.out b.out # create symbolic link, a pointer to the original file - use to create a pointer rather than a deep copy, ls -l will show what a symbolic link points to
 ln -sb # backup of existing files if overwriting
@@ -197,7 +217,14 @@ grep -C # 3 lines before and after
 grep -n # show line numbers
 grep -w # search for component words, not the entire substring
 grep -l # list filenames with matching content
-grep -E # interpret pattern as a regular expression, can also use egrep (TODO: Add some popular regular expressions people use)
+grep -E # interpret pattern as a regular expression, can also use egrep
+# TODO: Add some popular regexes for grep at the command line
+
+# Popular usages
+grep -iIrn computesSum * # Case insensitive search through all of the files recusively starting from my current directory for the string "computesSum" but does not search binary files.  When a match is found, print the line number it was found on
+grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' input.txt > output.txt # grep for IP address
+grep -R --include="*.py" "pattern" /path/to/dir # grep recursively through files of a certain type, such as .py files
+grep -m 1 "needle" *.txt # show only the first match in each file
 ```
 TODO Popular usages  
 
@@ -212,6 +239,16 @@ find . -name “abc” 2>/dev/null # output to dev null when doing global search
 -not # invert all filtering criteria
 find abc/ # lists everything recursively in directory
 find -inum 16187430 # inode number
+
+# Popular usages
+find . -name "*.foo" -exec tail {} \; # output the last 10 lines in each .foo file in directory and subdirectories
+find . -iname '*foo*' # find all files that contain foo in their name
+find . -type d -empty -delete # find and remove empty directories
+find . -type f -empty -delete # find and remove empty files
+find . -type d -ctime -5 # find all directories created in the last 5 days
+find ./ -not -type d -printf "%T+ %p\n" | sort | tail -1 # find last modified file in currenct directory
+find -L . -type l # find broken sym links
+find ~/chat -name *.txt | xargs grep 'chocolate' # grep for term in each matched file
 ```
 TODO Popular usages  
 
@@ -229,12 +266,16 @@ tar -cvf . ~/abc.tar # compress, verbose, compress to filename provided
 
 #### sort
 ```bash
-sort # ascending
+sort abc.txt def.txt # ascending, can do multiple files
+sort /path/to/directory/*.csv # sort all files
+
 sort -r # descending, z to a, 10000 to 1
 sort -R # randomize
 sort -f # ignore case
 sort -u # unique only
 sort -n # sort according to numerical value
+sort -k 2 # start at key 2 (used for seprated columns, like the history command)
+sort -h # sort by human readable size (use with -h on another command, like du -h), only usable on non-Mac
 ```
 
 #### uniq
@@ -245,13 +286,18 @@ uniq -c # give incidence of line, will show repeated only once
 uniq -d # only output duplicated items, single time
 uniq -u # only output lines not repeated
 uniq -i # case insensitive
+
+uniq -cd # Show count of lines that have duplicates
+uniq -C # count number of duplicates
 ```
 
 #### wc: Word Count
 ```bash
+# by default shows num lines, words, characters (in that order)
 wc -w # word count only
 wc -l # line count only
 wc -L # longest line length, used often for style in code, where 80 lines max may be a desired norm in a team
+find path/to/dir | xargs wc -l # count the number of lines of all files in a directory
 ```
 
 #### ssh: Open SSH client
@@ -266,6 +312,7 @@ ssh -D 1234 hostname # use hostname as a SOCKS proxy on localhost:1234
 #### mv: Move file from src to dest
 ```bash
 mv src dest # base usage
+mv srcfile srcfile srcfile destdirectory
 mv hello.{txt,old} # quick rename
 ```
 
@@ -287,6 +334,8 @@ rm !(*.foo\|*.bar\|*.baz) # delete everything but
 -U # outpt num of unified context, 3 lines is default
 -q # show only that the files differ
 -y # side by side
+diff -r DIRECTORY1 DIRECTORY2 # show the difference between two directories
+diff <(sort file1) <(sort file2) # show the difference between two files
 ```
 
 #### nl: Line Numbering
@@ -312,25 +361,37 @@ scp -v # verbose mode
 #### cURL: Transfer a URL
 Certain commands taken from [here](http://zaiste.net/2012/11/introduction_to_curl/)
 ```bash
-curl ifconfig.me/ip # get IP
-curl ifconfig.me/port # get port
+# The Basics
+curl http://www.example.com/index.html -o abc.html # output to file abc.html
+curl -O http://www.example.com/index.html # output to the remote filename on local, in this case index.html
+
+# Common Options
+curl -v # verbose
+
+# Sending data
+curl -d @invoice.pdf -X POST http://devnull-as-a-service.com/dev/null # post a file
 curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server, automatically POST, can also separate by separate -d arguments rather than an &
+curl http://www.example.com/index.html -o abc.html # output to file
 curl -d '{"user": {"name": "zaiste"}}' -H "Content-Type: application/json" http://server/
 curl --data-urlencode # 
 curl --form upload=@localfilename --form press=OK [URL] |
-curl http://www.example.com/index.html -o abc.html # output to file
-curl -O http://www.example.com/index.html # output to remote filename on local, in this case index.html
-curl -v # verbose
+
 curl -head # head only
+
+curl ifconfig.me/ip # get IP
+curl ifconfig.me/port # get port
 ```
 
 #### wget: Network Downloader
 ```bash
-wget -O abc.html http://www.example.com # output to file
+wget http://www.example.com/xyz.html # get file and save as xyz.html
+wget -O abc.html http://www.example.com/def.html # output to file
 wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted downlaod
 wget -i download-file-list.txt # download entire file list, file list has URLs listed one per line
 wget --mirror -p --convert-links -P ./localdirectory http://www.example.com/index.html # convert links converts links to local, -p downloads all files to view, -P saves to local directory
 wget -w 2 -r -np -k -p http://www.stanford.edu/class/cs106b # recursively download an entire site, waiting 2 seconds between hits (courtesy Stanford Startup Engineering class)
+wget --random-wait -r -p -e robots=off -U mozilla http://www.example.com # Download an entire website
+
 ```
 
 #### cut: Cut out selected portions of each line of a file
@@ -354,7 +415,7 @@ tee abc.txt def.txt # output to multiple files
 not standard, and yes there could be a large debate of this command, but very useful in today’s world of API’s  
 
 ```bash
-curl http://www.espn.com/abc.json # jq '.' # no, espn does not have an API
+curl http://www.example.com/abc.json # jq '.'
 ```
 
 #### Other commands
@@ -376,15 +437,16 @@ hostname |
 mount /dev/sdb1 /u01 | mount device to directory
 read var1 | set variable to stdin
 ping www.google.com | see if a site is up and you can connect to it
-yes | print yes forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
+yes | print y forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
 
 ## [Advanced](#advanced)
 #### ifconfig: Configure network interface
 ```bash
 ifconfig -a # view all network interfaces
+ifconfig eth0 # show a single interface
 ifconfig eth0 up # turn on
 ifconfig eth down # turn off
-ifconfig eth0 192.168.2.2
+ifconfig eth0 192.168.2.2 # assign IP address to interface, may need sudo privileges
 ```
 
 #### gcc
@@ -435,6 +497,7 @@ pgrep -n emacs # most recent emacs
 pgrep -u bob # only processes started by Bob
 pgrep -l # list out name as well, not just PID
 pgrep -v # inverts matching
+pgrep -f abc.rb # Find the pids of processes with 'abc.rb' as an argument, like 'ruby abc.rb'
 ```
 
 #### awk
@@ -452,31 +515,29 @@ tr -dc 'a-z A-Z \t \n '\32'' # invert delete
 tr -s '\n' # make multiple instance just a single instance
 ```
 
-#### du: Disk Usage
-```bash
-du -hs # disk usage of directory, including subdirectories in pretty format
-du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
-```
-
-#### df: Disk Free
-```bash
-df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
-```
-
 #### time
 `time ls # run ls and profile time`  
 wall/real time - can be less than some of system + user time, given parallelism  
 system time (system calls) vs user time (time spent running user requested command)  
 
 #### sleep
-`sleep 5 # sleep for 5 seconds then proceed`
+```bash
+sleep 5 # sleep for 5 seconds then proceed
+sleep 5s # sleep for 5 seconds # non-Mac
+sleep 5m # sleep for 5 minutes # non-Mac
+```
 
 #### sed: Substitution
 ```bash
-sed -e 's/day/night' # replace first day with night per line
+sed -e 's/day/night' abc.txt def.txt # replace first day with night per line
 sed -e s/day/night/g' # replace all day with night
+sed -i # inplace editing
 sed -E # use regular expression
 sed -e s/[a-z]/(&)/ # & means use found section
+
+# Common usages
+sed '/^[[:space:]]*$/d' input.txt > output.txt # remove blank lines from a file
+sed -e 's/<[^>]*>//g' index.html # strip HTML
 ```
 
 #### seq: Sequence
@@ -498,6 +559,8 @@ watch -n 5 tail /var/log/messages # runs every 5 seconds after previous run comp
 watch --precise -n 5 # tries to run 5 seconds from previous start
 watch -d # highlight differences between successive updates
 watch -e # exit if the return value is non-zero
+
+watch -d ls -l # watch contents of a directory change
 ```
 
 #### jot: Generate Data
@@ -515,16 +578,19 @@ jot -s’:’ # print data with string as separator (not newline)
 # a good tool to be used with strace
 # without arguments, lists all open files for default processes
 -a # AND the results, this is where the real power comes in
-lsof /some/dir/path
+lsof /some/dir/path # list all open files under path
 lsof somefile.txt
 lsof -i # list IP Sockets
 lsof -iTCP
+lsof -i -sTCP:LISTEN # Find listening ports
+lsof -i -sTCP:ESTABLISHED # Find established connections
 lsof -iUDP # UDP is for media, when speed matters, but quality does not
-lsof -i :22 # specific port
+lsof -i :80 # list all processes on specific port, this is for web processes
 lso -i@172.16.12.5:21 # Show connections to a specific host
+lsof -i @192.168.1.2:6881=6887 # Show open connections within a port range
 lsof -u username
 lsof -u ^username # all users but username
-lsof -c top
+lsof -c top # show files/connections open by a binary
 lsof -p 1232 # for pid
 lsof -p `pidof auditd`
 lsof -i @fw.google.com:2150=2180 # port range
@@ -567,6 +633,7 @@ TODO
 openssl sha1 filename # get sha1 hash of filename
 openssl dgst -sha256
 openssl dgst -ripemd160
+openssl s_client -connect www.domain.com:443 -showcerts # get certificate from a certain server
 ```
 
 [Start of More Advanced?]
@@ -634,7 +701,9 @@ This section is for things related to user management, filesystem, or the genera
 
 #### sudo
 ```bash
-sudo command # become a root temporarily (to execute a command), prompts for password when first typed and then won't ask for password again for a certain window during that terminal session
+sudo command # become a root temporarily (to execute a command), prompts for password when first typed and then won't ask for password again for a 5 min window during that terminal session
+sudo !! # run previous command as sudo
+
 ```
 
 #### Package management - apt-get, brew, and install from source
@@ -666,7 +735,10 @@ sudo make install
 ```
 
 #### chown: Change ownership (chown)
-`chown bob file.txt`
+```bash
+chown bob file.txt
+chown -R user:group path/to/directory/ # apply recursively
+```
 
 #### chmod: Change mode
 read is 4, write is 2, exec is 1  
@@ -680,6 +752,8 @@ chmod -x abc.out
 chmod g+x abc.out
 chmod go-rwx file.txt
 chmod -R # apply recursively to all files in the subdirectory
+
+sudo chmod -R 700 secret_folder # allow only root access to folder
 ```
 
 #### chgrp: Change Group
@@ -687,8 +761,22 @@ chmod -R # apply recursively to all files in the subdirectory
 
 #### su: Become Super User
 ```bash
+sudo su # switches you to root user, use carefully
 su - johndoe -c 'ls' # run command as user
 su - johndoe # switch to user
+```
+
+#### du: Disk Usage
+```bash
+du -hs * # disk usage of directory, including subdirectories in pretty format
+du -h --max-depth=1 # List human readable size of all sub folders from current location
+
+du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
+```
+
+#### df: Disk Free
+```bash
+df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
 ```
 
 #### passwd: Change password
@@ -710,7 +798,7 @@ use htop, not top when possible
 
 #### ps: Process status
 ```bash
-ps aux # standard usage, display info about all users processes
+ps aux | grep process # standard usage, display info about all users processes
 ps -u abc,def # users
 ps -f -p 123 # find by process id
 ps -f -ppid 123 # find by parent process id
@@ -742,7 +830,6 @@ uname -a | get information about system
 DISCLAIMER: This is just to help someone get the basics of Vim, not for regular users
 
 #### General Notes
-
 
 #### CLI Commands
 Command | Description
