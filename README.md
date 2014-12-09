@@ -540,6 +540,8 @@ sed -e 's/<[^>]*>//g' index.html # strip HTML
 #### seq: Sequence
 ```bash
 seq 5 # print sequence of numbers starting at 1
+seq 1 10 # print from 1 to 10
+seq 1 3 10 # go from 1 to 10 in steps of 3
 seq -s :abc 5
 ```
 
