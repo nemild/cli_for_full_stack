@@ -32,7 +32,6 @@ A prioritized list of the most important CLI commands for full stack engineers
 <a href="#sysadmin_basics">Sysadmin Basics</a>  
 <a href="#vim_basics">Vim (Uber-)Basics</a>  
 <a href="#setup">Setup</a>  
-<a href="#bash_scripting">Bash Scripting</a>  
 
 ## [Keyboard Shortcuts](#keyboard_shortcuts)
 Keyboard Shortcut | Description
