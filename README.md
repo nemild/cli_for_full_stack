@@ -12,8 +12,13 @@ A prioritized list of the most important CLI commands for full stack engineers
 * **Cocktails**: This doc includes command cocktails (multi commands, like a series of piped commands); man pages don’t show this, so this is a core reason for this doc
 * **Terseness**: Use the minimal amount of words to explain something, this is not documentation
 * **Context**: It might be relevant to explain when or how something should be used if it is non-obvious (or even link to the relevant doc - see strace)
-* There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server) - this probably needs to be better called out
+* There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server) - this probably needs to be better called out; this is focused on bash
 * This doc includes other basics of the CLI (keyboard shortcuts and very basic vim) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
+
+## Other Resources
+* [Bro Pages](http://bropages.org/): Lists popular options for many of the most used commands, crowdsourced and upvoted (used to augment several commands below)
+* [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
+* [Sobel's Guide to Linux Command's Editors, and Shell Programming](http://www.amazon.com/Practical-Guide-Commands-Editors-Programming/dp/013308504X/ref%3Dsr_1_1): One of the more popular Linux books, includes examples and many basics (perl, bash programming, python) - fairly distribution agnostic
 
 ##### Authors
 * Nemil Dalal (nemild at gmail)
@@ -30,14 +35,11 @@ A prioritized list of the most important CLI commands for full stack engineers
 <a href="#vim_basics">Vim (Uber-)Basics</a>  
 <a href="#setup">Setup</a>  
 
-## Other Resources
-* [Bro Pages](http://bropages.org/): Lists popular options in a man page type format (used to augment several commands below)
-* [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
-
 ## [Keyboard Shortcuts](#keyboard_shortcuts)
 Keyboard Shortcut | Description
 :-------: | ---------
-*Ctrl-C* | terminate program
+*Ctrl-C* | terminate program, TERM signal
+*Ctrl-\\* | QUIT signal
 *Ctrl-A* | go to start of line
 *Ctrl-E* | go to end of line
 *Ctrl-W* | cut the previous word
@@ -47,8 +49,8 @@ Keyboard Shortcut | Description
 *Ctrl-XX* | Move between start of line and current cursor position
 *Ctrl-X/Ctrl-E* | use text editor to input command, used for long or multiline commands, can also use `fc`
 *Ctrl-L* | clear screen
-*Ctrl-D* | terminate program
-*Ctrl-Z* | suspend program
+*Ctrl-D* | terminate program (send EOF)
+*Ctrl-Z* | suspend program, `fg` to return
 *Ctrl-R* | search command history, start typing command, ctrl-r again to cycle through other matches in reverse chronological order
 *Ctrl-G* | Escape from search command mode (may be just easier to use Ctrl-C)
 *ESC-.* | past last argument of previous command
@@ -63,16 +65,19 @@ Keyboard Shortcut | Description
 #### Other Basics
 * Three streams are stdin, stdout, and stderr
 * find . 2> # the 2> pipes out stderr only, can use &> to pipe out both stdout and stderr
+* pipe both standard error and stdout is |&
 
 #### Previous Commands or Arguments
 ```bash
 history # see list of previous typed commands
 history | grep command # list out previous calls with command, then do !123 to run where 123 is the number shown for the command
 !! # run previous command
+!string # run most recent command starting with this string
+!?string? # run most recent command with this substring
 !105 # run command number 105 from history
 
 ^abc^def # replace first argument with second argument in previous command (only for first occurrence)
-!!gs/foo/bar # run last command replacing all foo with bar
+!!:gs/foo/bar # run last command replacing all foo with bar
 
 !:$ # last argument of previous command
 !:0 # first argument of previous command (and number can be incremented for other args)
@@ -101,6 +106,7 @@ Flag | Description
 -u | user
 -h | pretty format the size (from bytes to mb/kb/etc), if using this when sorting, use sort -h (only non-Mac)
 --color | use color
+ls -- -l | the double hyphen indicates that everything afterward should be considered an argument, not an option
 
 #### cd: Change Directory
 ```bash
@@ -110,7 +116,7 @@ cd ~ # go to home
 cd - # go to previous directory
 cd .. # go up one directory
 (cd ~/asd && ls) # execute command in subshell, at end you are back in your current directory
-there’s also `pushd` and `popd` when you want to push your current location on the stack before moving to the new directory
+there’s also `pushd` and `popd`/ `popd +1` and `dirs` when you want to push your current location on the stack before moving to the new directory
 ```
 
 #### mkdir: Make Directory
@@ -130,34 +136,44 @@ ls -G # colorize
 ls -S # sort files by size
 ls -d */ # directories only
 ls -p # ack -v # files only
+ls -ld dir/ # see details of a directory, not listing of items in a directory (used to see permissions)
+ls -i # print inode
 ls | wc -l # number of items in directory (including subdirectories)
 ls -R . #recursively list the files and directories
 ls | grep -v *.rb # filter out unwanted results, like .rb files
 ```
 
 Popular usages  
-`ls -lah`  
-`ls -larthG`  
-`ls -ltr`  
-
+```bash
+ls -lah
+ls -ltr # sort by time, with latest at bottom
+ls -larthG # same as above plus show hidden, human readable file size, colorize
+```
 #### man: Manual
 ```bash
-man command # shows manual page for command
+man command # shows manual page for command typically using less
+
+# The following are popular commands in man
 Ctrl-B/Ctrl-F # page up and down
 /searchterm # to search forward, can use standard vim commands including n and N to go forward and backward to searchterms, use this to search for flags ('-n')
 ?searchterm # search backward
+h # display help, keyboard shortcuts
 man ascii # ascii table
+man hier # explanation of file systen
 man 2 ls # go to section 2 of ls, search for what each section number means
-# use with whatis and apropos, to determine what commands available are
+# Most users find their info in sections 1 (User commands), 6(Games), and 7(Miscellaneous)
+# use with whatis (complete word matches) and apropos/man -k (partial word matches), to determine what commands are available
+# can also use info or help
 # TODO: Any other feedback on using man pages effectively
 ```
 
 #### cat: Print a file
 ```bash
+cat abc.txt def.txt # can use on multiple files
 cat -n # number lines starting at 1, can also call nl -b a
 cat -b # number non-blank lines, can also call nl -b t
 cat -T # Show tabs in a file
-Note: Don’t pipe a cat ('cat hello | dosomething'), instead dosomething < abc.txt
+Note: Don’t pipe a cat ('cat hello | dosomething'), instead 'dosomething < abc.txt'
 ```
 
 #### less: Print a file with pagination
@@ -188,6 +204,8 @@ tail -f "my_server.log" | grep "my process" # Filter lines containing a match fo
 ```bash
 echo "line1\nline2" >> .bash_profile # append string to end of .bash_profile, quick way to edit
 echo "line1\nline2" > output.txt # quick way to create file with text, compare to touch and then nano/vi
+echo -n "Hello" # this line is not followed by a newline as is standard
+echo -e "Hello\nWorld" # interpret backslash escape sequences like newline ('\n') and tab ('\t')
 echo $var # print shell variable
 echo $(pwd) >> log # way to run a command and append to file
 echo "ls -l" | at midnight # execute command at a certain time
@@ -196,15 +214,15 @@ echo {a..z} # print a through z, can be used for numbers as well
 
 #### ln: Make link (used primarily for symbolic or soft link)
 ```bash
-ln -s /a.out b.out # create symbolic link, a pointer to the original file - use to create a pointer rather than a deep copy, ls -l will show what a symbolic link points to
+ln -s /a.out b.out # create symbolic link, a pointer to the original file - use to create a pointer rather than a deep copy, ls -l will show what a symbolic link points to, make sure to use absolute link path for the source file/dir
 ln -sb # backup of existing files if overwriting
 ln -sf # if target file link exists, unlink so that the new link may occur
 ```
 
 #### grep: File Pattern Searcher
 ```bash
-grep substring --color file1.txt file2.txt # search for substring can be used with multiple files
-grep substring -ri --color . # recursive, ignore case, highlight match in color, a common usage
+grep 'substring' --color file1.txt file2.txt # search for substring can be used with multiple files
+grep 'substring' -ri --color . # recursive, ignore case, highlight match in color, a common usage
 grep -v # invert
 grep -c # incidence count
 grep -x # exact match
@@ -212,7 +230,7 @@ grep -A # 3 lines after
 grep -B # 3 lines before
 grep -C # 3 lines before and after
 grep -n # show line numbers
-grep -w # search for component words, not the entire substring
+grep -w # search for whole words
 grep -l # list filenames with matching content
 grep -E # interpret pattern as a regular expression, can also use egrep
 # TODO: Add some popular regexes for grep at the command line
@@ -230,12 +248,15 @@ TODO Popular usages
 find . -name "hello.txt" # standard usage
 find . -name “abc” 2>/dev/null # output to dev null when doing global search, and don't want to discard errors (e.g., file is not accessible because not a super user)
 -iname "abc.txt" OR -iname "*.txt" # search for case insensitive
--mtime -7 # modified time is within seven days previous to today
+-mtime -7 # modified time is within seven days previous to today, can also use 7s, 7m, 7h, 7d, 7w to specify seconds/minutes/hours/weeks
+-ctime -7 # created time is within 7 days of today
 -print0 # used with xargs -0 option, can pipe find results to xargs
 -type l/f/d # search for a type of item, f = file, l = symbolic link, d = directory
 -not # invert all filtering criteria
 find abc/ # lists everything recursively in directory
-find -inum 16187430 # inode number
+find -inum 16187430 # inode number 
+find -maxdepth 1 # only list in current directory, not subdirectories
+find -perm 444 # search based on permissions
 
 # Popular usages
 find . -name "*.foo" -exec tail {} \; # output the last 10 lines in each .foo file in directory and subdirectories
@@ -249,11 +270,27 @@ find ~/chat -name *.txt | xargs grep 'chocolate' # grep for term in each matched
 ```
 TODO Popular usages  
 
+#### jobs: (and fg and bg)
+Job is a program you interactively start that is not a daemon. Jobs in background that required input are automatically stopped.
+```bash
+jobs # list out jobs, states are Running, Stopped; + is most recent job that is still running, - is second most recent
+sleep 10000 & # start job in background
+sleep 100000 # start job in foreground, then Ctrl-Z to suspend, each new job is higher number than others currently running
+bg 2 # background the suspended job (assuming the number is 2), bg on its own will background the highest numbered job
+fg 1 # bring job 1 to foreground, also can do %1, fg on its own will foreground the most recent/highest numbered job
+fg %find # search for starting of string
+fg %?ace # search for sustring
+kill %2 # kill job number 2
+```
+
 #### tar: Archive file or path
+Create a single file from multiple files and/or subdirectories (old tape archive)
 ```bash
 tar -cvf . ~/abc.tar # compress, verbose, compress to filename provided
 -xvf # extract, verbose, extract filename provided
+-xvzf # extract, verbose, uncompress gzip, extract filename provided
 -cvzf # gzip as well
+-cvjf # bzip2 as well
 ```
 
 #### gzip: Compress
@@ -308,10 +345,16 @@ ssh -D 1234 hostname # use hostname as a SOCKS proxy on localhost:1234
 
 #### mv: Move file from src to dest
 ```bash
-mv src dest # base usage
+mv src_file_or_directory dest_file_or_directory # base usage
 mv srcfile srcfile srcfile destdirectory
 mv hello.{txt,old} # quick rename
 ```
+
+#### cp: Copy a file from src to dest
+```bash
+cp src dest # base usage
+```
+
 
 #### rm: Remove file
 ```bash
@@ -430,7 +473,7 @@ whatis command | short description of command
 apropos command | find commands like this
 pbcopy / pbpaste | macintosh, pipe to/from these for clipboard, see alias section for Linux
 units | convert between units
-hostname |
+hostname | displays the system name
 mount /dev/sdb1 /u01 | mount device to directory
 read var1 | set variable to stdin
 ping www.google.com | see if a site is up and you can connect to it
@@ -448,8 +491,10 @@ ifconfig eth0 192.168.2.2 # assign IP address to interface, may need sudo privil
 
 #### gcc
 ```bash
+gcc def.c # compiles, assembles and links a program, executable is in a.out
 gcc -c abc.cpp # compile cpp
 gcc abc.o def.o -o def.out # link and create binary with filename, -o is output
+gcc -Iabc/def/ # look for include files in directory before looking in standard locations (can use mutliple of these)
 ```
 
 #### [parallel](#parallel): Run commands in parallel
@@ -504,12 +549,14 @@ TODO
 
 #### tr: Translate Characters (replace a character with another)
 ```bash
-cat abc.txt | tr ' ' '\_' # replace
+tr ' ' '\_' < abc.txt # replace spaces with underscore, and print to stdout
+echo abcdef | tr 'abcdef' 'xyzabc' # each single character in the first string is translated to the corresponding character in the second string
 tr "A-Za-z" "a-zA-Z" # reverse case
 tr "a-z" "A-Z" # make lowercase uppercase
 tr -d '\r' # delete character, useful when moving txt files between Windows and Linux
 tr -dc 'a-z A-Z \t \n '\32'' # invert delete
 tr -s '\n' # make multiple instance just a single instance
+tr '[:upper:]' '[:lower:]' # upper to lower case
 ```
 
 #### time
@@ -519,16 +566,23 @@ system time (system calls) vs user time (time spent running user requested comma
 
 #### sleep
 ```bash
-sleep 5 # sleep for 5 seconds then proceed
-sleep 5s # sleep for 5 seconds # non-Mac
-sleep 5m # sleep for 5 minutes # non-Mac
+sleep 5; echo "done"  # sleep for 5 seconds then proceed
+sleep 5s # sleep for 5 seconds, Linux only
+sleep 5m # sleep for 5 minutes, Linux only
+sleep 1d 5h 5m 10s # can create a list, Linux only
+# useful in loops to delay
 ```
 
-#### sed: Substitution
+#### sed: Stream Editor
+Primarily used for substitution (leading 's' below)
 ```bash
-sed -e 's/day/night' abc.txt def.txt # replace first day with night per line
-sed -e s/day/night/g' # replace all day with night
-sed -i # inplace editing
+sed 's/day/night' abc.txt def.txt # replace first 'day' with 'night' per line, can use with multiple files
+sed -e 's/day/night' -e 's/something/else/g' abc.txt # -e lets you specify separate commands
+sed -i # inplace editing, replaces file
+sed -i.bak # inplace editing, replaces file, and saves backup file with given extension
+sed '5s/day/night' abc.txt # substitute only on line 5
+sed '5!s/day/night' abc.txt # everywhere other than line 5
+
 sed -E # use regular expression
 sed -e s/[a-z]/(&)/ # & means use found section
 
@@ -618,7 +672,7 @@ strace -p 123 # use PID 123, for running process
 ```
 
 #### split: Split file
-This command is often used in concert with [paralle](#parallel): split breaks up a file (like a data CSV), and then parallel lets you process each section concurrently
+This command is often used in concert with [parallel](#parallel): split breaks up a file (like a data CSV), and then parallel lets you process each section concurrently
 ```bash
 split -b 75m input.zip # cut into multiple files of 75m max
 cat `ls x*` > reassembled.zip
@@ -740,8 +794,9 @@ chown -R user:group path/to/directory/ # apply recursively
 ```
 
 #### chmod: Change mode
-read is 4, write is 2, exec is 1  
-user (u), group (g), other/everyone else (o), all (a)  
+read is 4, write is 2, exec is 1, use sums  
+user/owner (u), group (g), other/everyone else (o), all (a)  
+For shell scripts, you need both r and x to run them, for binary only x
 ```bash
 chmod 755 # rwx, rx, rx
 chmod 644 # rw, r, r
@@ -767,7 +822,9 @@ su - johndoe # switch to user
 
 #### du: Disk Usage
 ```bash
-du -hs * # disk usage of directory, including subdirectories in pretty format
+du * | sort -r # display usage of each file and subdirectory in current directory starting with largest, can use with head to get the largest items at top
+du -sh * # disk usage of items in directory, but does not traverse (s = summarize) subdirectories
+du -shc * # same as above, but adds a total at the end
 du -h --max-depth=1 # List human readable size of all sub folders from current location
 
 du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
@@ -776,6 +833,7 @@ du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not
 #### df: Disk Free
 ```bash
 df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
+df -lh # local file systems onlt
 ```
 
 #### passwd: Change password
@@ -792,22 +850,41 @@ shutdown -h +10
 ```
 
 #### top: Display and update sorted information about processes
+Linux and Mac OS are very different
 use htop, not top when possible  
-`top -U johndoe`
+```bash
+top -U johndoe # see processes owned by johndoe
+# use 'q' to quit, and 'k' (on Linux only) to pick a PID to kill, can do '?' to see which keyboard options are available
+```
 
 #### ps: Process status
 ```bash
-ps aux | grep process # standard usage, display info about all users processes
+ps aux | grep process # standard usage, display info about all users processes; often used in conjunction with kill
+ps -l # long option
 ps -u abc,def # users
 ps -f -p 123 # find by process id
 ps -f -ppid 123 # find by parent process id
 ps aux --sort pmem # sort by column
 ```
 
+#### kill: Kill
+```bash
+kill 2592 # kill PID 2592, send TERM signal
+kill -9 2592 # non-ignorable kill
+kill %1 # kill job number 1 from 'jobs' list
+```
+
+#### killall: Killall
+```bash
+killall command # kills all instances of command owned by user (root user kills every process)
+```
+
+
 #### Other commands
 Command | Description
 :-----: | -----
-which command | determine which command path is used to run command, used when you may have multiple binaries
+which command | determine which command path is used to run command, used when you may have multiple binaries (looks through directories in your search path in order, and lists the first found)
+whereis command | looks through list of standard directories independent of serch path, displays all files found (not just first)
 env | print system environment variables
 export PATH=$HOME/bin:$PATH | add bin path to the existing path
 groups | Outputs the user groups of which your account belongs to.
@@ -815,15 +892,19 @@ adduser johndoe | need super user privileges
 passwd -a demo sudo | 
 service ssh restart | restart service
 whoami | Prints your username
+who | list users on the system
+w | users on system, show who is logged in and what they're doing (more info than who)
+users | list of users who are currently logged in
 finger username | info on user, including logins
-last, last username | list of last logged in users
-w | users on system, show who is logged in and what they're doing
+last, last username | list of login history for a user or all users
 uptime | time system has been up
-free | free space
+free, free -mt | free space (amount of RAM, swap), not available on Mac; latter option uses space in megabytes
 man hier | get an explanation of the system directory structure
 host | get ip of domain
 uname -a | get information about system
-
+echo $0 | determine which shell (e.g., bash)
+nohup command | run command, ignoring any hangup signals (used when starting a process on a server which you want to keep running when you logout)
+hash, hash -r | table of where commands can be found based on usage, -r empties table when you may have changed the path
 
 ## [vim basics](#vim_basics)
 DISCLAIMER: This is just to help someone get the basics of Vim, not for regular users
@@ -870,6 +951,7 @@ G | bottom of file
 
 #### Commonly Used Aliases
 ```bash
+alias h='history | tail'
 alias hist='history  | grep'
 alias webserver="python -m SimpleHTTPServer"
 
@@ -892,6 +974,7 @@ alias md='mkdir'
 alias cl='clear'
 alias du='du -ch --max-depth=1'
 alias treeacl='tree -A -C -L 2'
+
 
 alias em='emacs -nw'     # No X11 windows
 alias eqq='emacs -nw -Q' # No config and no X11
