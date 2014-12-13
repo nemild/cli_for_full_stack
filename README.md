@@ -294,8 +294,17 @@ tar -cvf . ~/abc.tar # compress, verbose, compress to filename provided
 ```
 
 #### gzip: Compress
+Bzip2 is better (below), but gzip is commonly used
 ```bash
 -d # decompress
+```
+
+#### bzip2: 
+Similar options to gzip (though not exact)
+```bash
+bzip2 -v filetocompress # verbose
+bunzip2 letter.bz2 # uncompress, can also do bzip2 -d
+bzcat file.bz2 # view text of file without saving uncompressed file
 ```
 
 #### sort
@@ -478,6 +487,7 @@ mount /dev/sdb1 /u01 | mount device to directory
 read var1 | set variable to stdin
 ping www.google.com | see if a site is up and you can connect to it
 yes | print y forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
+script | record everything typed in a text file
 
 ## [Advanced](#advanced)
 #### ifconfig: Configure network interface
