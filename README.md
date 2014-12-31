@@ -222,7 +222,7 @@ ln -sf # if target file link exists, unlink so that the new link may occur
 #### grep: File Pattern Searcher
 ```bash
 grep 'substring' --color file1.txt file2.txt # search for substring can be used with multiple files
-grep 'substring' -ri --color . # recursive, ignore case, highlight match in color, a common usage
+grep 'substring' -riI --color . # recursive, ignore case, ignore binary file matches, highlight match in color, a common usage
 grep -v # invert
 grep -c # incidence count
 grep -x # exact match
@@ -233,6 +233,7 @@ grep -n # show line numbers
 grep -w # search for whole words
 grep -l # list filenames with matching content
 grep -E # interpret pattern as a regular expression, can also use egrep
+grep -I # ignore binary file matches
 # TODO: Add some popular regexes for grep at the command line
 
 # Popular usages
@@ -362,6 +363,7 @@ mv hello.{txt,old} # quick rename
 #### cp: Copy a file from src to dest
 ```bash
 cp src dest # base usage
+cp -r src dest # recursive
 ```
 
 
@@ -934,26 +936,40 @@ Key Sequence | Description
 $ | end of line
 0 | start of line
 w | one word forward
+i | insert mode
+a | append
+A | append to end of line
+o | Insert line after current line
+O | Insert line above current line
 2e | 2 words forward, at end of line
 b | before
 10j | down ten lines
 10k | up ten lines
 dw | delete word
+d$ | delete to end of line
 u | undo last
 U | Undo all on line
+Ctrl-R | undo the undos
 dd/p | cut and paste
 / | search for search term going forward
 ? | search for search term going backward
 n | forward when looking for a search term
 N | backward when looking for a search term
+r then character | replace character
+ce | replace word
 gg | top of file
 G | bottom of file
+Ctrl-G | Displays location in file and file status
 25G | Goto line
 % | go to matching parentheses
 3igoESC twice | insert go 3 times
 / # | next/previous of the word that you are at
 ^F, ^B | page up and page down
+:s/old/new/g | substitute for all 'old' on a line
+:%s/old/new/g | substitute for all 'old' in the file
 :w | save
+:w filename.txt | save to file
+Ctrl-D | see completions when typing a colon
 :wq | save and quit
 :q! | quit without saving
 
