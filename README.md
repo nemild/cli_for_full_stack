@@ -60,6 +60,8 @@ Keyboard Shortcut | Description
 *Ctrl-S/Ctrl-Q* | stop output to screeen (for verbose commands) / resume output to screen
 *Ctrl-T* | swap previous two characters (used for misspellings)
 *Meta-T* | swap previous two words
+*ESC-backspsace* | delete previous word
+*ESC-d* | delete next word
 
 ## [Getting around the command line](#getting_around_the_command_line)
 #### Other Basics
@@ -134,6 +136,7 @@ ls -r # reverses order
 ls -t # sort by time modified
 ls -G # colorize
 ls -S # sort files by size
+ls -F #  Display a slash (`/') immediately after each pathname that is a directory, an asterisk (`*') after each that is executable, an at sign (`@') after each symbolic link, an equals sign (`=') after each socket, a percent sign (`%') after each whiteout, and a vertical bar (`|') after each that is a FIFO
 ls -d */ # directories only
 ls -p # ack -v # files only
 ls -ld dir/ # see details of a directory, not listing of items in a directory (used to see permissions)
@@ -181,6 +184,8 @@ used to print files with pagination, can use standard keyboard shortcuts like pa
 ```bash
 less filename.txt # print file with pagination
 less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to have search terms highlighted
+less -r # retain color codes, e.g., use with color options on the command you are piping to less
+less -S # chop lines that go past screen end (rather than wrapping)l
 ```
 
 #### head: Display the first part of a file
@@ -409,6 +414,127 @@ scp -r # recursively copy entire directories
 scp -v # verbose mode
 ```
 
+#### tmux: Terminal Multiplexer
+Enables a number of terminals to be accessed and controlled from a single terminal; great for multiple panes (windowing) and persistent state on remote servers
+
+Sessions (Overall theme, like work or sysadmin) > Windows (Projects within theme) > Panes (Views within a project)
+
+Highly encouraged to name sessions, windows, and panes
+
+* Shortcut *
+* CTRL-b is the activation required before pressing a key (can be changed - e.g., for ex-users of screen); many commands allow you to use this as well as an actual command
+* May consider remapping CAPSLOCK to CTRL to make life easier
+
+```bash
+# ---------------------------------------------
+# SESSIONS
+# ---------------------------------------------
+tmux new -s session_name # CTRL-b s
+
+tmux a # attach to first available session
+tmux a -t session_name # attaches to an existing tmux session
+tmux switch -t session_name # switches to an existing session
+
+# List existing tmux sessions
+tmux ls # CTRL-b s
+
+# Detach
+tmux detach  # CTRL-B d
+
+tmux rename-session -t old new # CTRL-b $
+tmux kill-session -t session-name # kills single session, see killall below for to kill all sessions
+
+# CTRL-b ) # previous session
+# CTRL-b ( # next session
+
+# ---------------------------------------------
+# WINDOWS
+# ---------------------------------------------
+# create a new window
+tmux new-window # CTRL-b c
+
+tmux rename-window # CTRL-b ,
+CTRL-b w # list all windows, can add name afterward to choose that window
+
+# move to window based on index
+tmux select-window -t :<window number> # CTRL-b <window number>
+
+# CTRL-b n/p # next/previous window
+# CTRL-b l # move to previously selected window
+# CTRL-b f searchterm # search for window
+# CTRL-B & # kill current window
+# CTRL-b l # last window
+
+# ---------------------------------------------
+# PANES (Split window)
+# ---------------------------------------------
+# Split window into two vertical panes
+tmux split-window # CTRL-b "
+
+# Split window into two horizontal panes
+tmux split-window -h # CTRL-b %
+
+# Break current pane into a new window
+# CTRL-b !
+
+# Kill current pane
+# CTRL-b x
+
+CTRL-B ←/→/↑/↓ # move focus to left, right, top, or bottom pane
+
+# swaps pane with another in the specified direction
+tmux swap-pane -[UDLR] # CTRL-b { # OR }
+
+# selects the next pane in the specified direction
+tmux select-pane -[UDLR]
+
+# selects the next pane in numerical order
+tmux select-pane -t :.+
+
+# Goto next pane
+# CTRL-b o
+
+# Show pane numbers, when the numbers show up type the key to goto that pane
+# CTRL-b q
+
+# Last pane
+# CTRL-b ;
+
+# ---------------------------------------------
+# COPY/PASTE (with emacs bindings)
+# ---------------------------------------------
+CTRL-b [ # enter copy mode
+     * press CTRL-SPACE or CTRL-@ to start selecting text
+     * move cursor to end of desired text
+     * press ALT-w to copy selected text
+
+CTRL-b [ # paste selected text
+
+# ---------------------------------------------
+# OTHER
+# ---------------------------------------------
+tmux info # list out every session, window, pane, etc.
+tmux list-commands # list out every tmux command and its arguments
+tmux list-keys # lists out all bound keys, and relevant tmux command
+tmux source-file ~/.tmux.conf # reload the tmux config file. tmux default config file is in ~/.tmux.conf
+
+# CTRL-b t # show time in current pane
+# CTRL-b ? # List all keybindings
+# CTRL-b : # command prompt where you can execute any command tmux supports
+
+# Kill all tmux windows
+killall tmux
+
+# Use this to start tmux on iTerm 2
+# will use iTerm 2 interface for tmux, but will let you restore environment when you need
+tmux -CC
+tmux -CC attach
+
+# with credit:
+# to Josh Clayton's tutorial: http://robots.thoughtbot.com/a-tmux-crash-course
+# Cody: http://blog.hawkhost.com/2010/06/28/tmux-the-terminal-multiplexer/
+```
+
 #### cURL: Transfer a URL
 Certain commands taken from [here](http://zaiste.net/2012/11/introduction_to_curl/)
 ```bash
@@ -490,6 +616,7 @@ read var1 | set variable to stdin
 ping www.google.com | see if a site is up and you can connect to it
 yes | print y forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
 script | record everything typed in a text file
+file abc.txt | get info on file type
 
 ## [Advanced](#advanced)
 #### ifconfig: Configure network interface
@@ -881,9 +1008,16 @@ ps aux --sort pmem # sort by column
 
 #### kill: Kill
 ```bash
+# Basics:
+# 1 - SIGHUP - Hang up signal. Programs can listen for this signal and act (or not act) upon it.
+# 2 - SIGINT - Interrupt
+# 15 - SIGTERM - Termination Signal, default signal sent by kill
+# 9 - SIGKILL - Kill Signal, immediate kill by the kernel
+
 kill 2592 # kill PID 2592, send TERM signal
-kill -9 2592 # non-ignorable kill
+kill -9 2592 # non-ignorable kill, SIGKILL
 kill %1 # kill job number 1 from 'jobs' list
+kill -SIGTERM 2931 # can use any of the signals above
 ```
 
 #### killall: Killall
@@ -976,6 +1110,15 @@ Ctrl-D | see completions when typing a colon
 ## [Setup](#setup)
 
 #### Commonly Used Aliases
+Use the following command to see your 25 most used commands (helps you determine which aliases to setup)
+```
+# this command finds the top 25 base commands (excluding arguments)
+ history|awk '{print $2}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -r | head -25
+
+ # this includes arguments
+ history|awk '{print $2, $3}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -n
+ ```
+
 ```bash
 alias h='history | tail'
 alias hist='history  | grep'
@@ -993,6 +1136,7 @@ alias cd2="cd ../.."
 alias ll="ls -alrtF --color"
 alias la="ls -A"
 alias l="ls -CF"
+alias cls='clear && ls'
 alias dir='ls --color=auto --format=vertical'
 alias vdir='ls --color=auto --format=long'
 alias m='less'
@@ -1000,7 +1144,6 @@ alias md='mkdir'
 alias cl='clear'
 alias du='du -ch --max-depth=1'
 alias treeacl='tree -A -C -L 2'
-
 
 alias em='emacs -nw'     # No X11 windows
 alias eqq='emacs -nw -Q' # No config and no X11
