@@ -415,100 +415,61 @@ scp -v # verbose mode
 ```
 
 #### tmux: Terminal Multiplexer
-Enables a number of terminals to be accessed and controlled from a single terminal; great for multiple panes (windowing) and persistent state on remote servers
+Enables a number of terminals to be accessed and controlled from a single terminal; great for multiple panes/windows/sessions (windowing) and persistent state on remote servers  
 
-Sessions (Overall theme, like work or sysadmin) > Windows (Projects within theme) > Panes (Views within a project)
+Hierarchy:  
+Sessions (Overall theme, like work or sysadmin) > Windows (Projects within theme) > Panes (Views within a project, seen on a single screen)  
 
-Highly encouraged to name sessions, windows, and panes
+Highly encouraged to name sessions and windows  
 
-* Shortcut *
-* CTRL-b is the activation required before pressing a key (can be changed - e.g., for ex-users of screen); many commands allow you to use this as well as an actual command
+Note:
+* CTRL-b is the prefix key required before pressing a key (can be changed - e.g., for ex-users of screen); many commands allow you to use this as well as an actual command
 * May consider remapping CAPSLOCK to CTRL to make life easier
 
+** The Basics **
 ```bash
 # ---------------------------------------------
 # SESSIONS
 # ---------------------------------------------
-tmux new -s session_name # CTRL-b s
-
+tmux new -s session_name # start and attach
 tmux a # attach to first available session
-tmux a -t session_name # attaches to an existing tmux session
-tmux switch -t session_name # switches to an existing session
+tmux a -t session_name # attaches to an existing session
+tmux ls # list sessions
+tmux detach # CTRL-B d
 
-# List existing tmux sessions
-tmux ls # CTRL-b s
+tmux rename-session -t <old> <new> 
+tmux kill-session -t <session>  
 
-# Detach
-tmux detach  # CTRL-B d
+# CTRL-b ? # List all keybindings
+# CTRL-b : # command prompt where you can execute any command tmux supports
+```
 
-tmux rename-session -t old new # CTRL-b $
-tmux kill-session -t session-name # kills single session, see killall below for to kill all sessions
+** Main Keyboard Shorcuts **
+Put the prefix key before keys listed below (default: CTRL-B)
 
-# CTRL-b ) # previous session
-# CTRL-b ( # next session
-
-# ---------------------------------------------
-# WINDOWS
-# ---------------------------------------------
-# create a new window
-tmux new-window # CTRL-b c
-
-tmux rename-window # CTRL-b ,
-CTRL-b w # list all windows, can add name afterward to choose that window
-
-# move to window based on index
-tmux select-window -t :<window number> # CTRL-b <window number>
-
-# CTRL-b n/p # next/previous window
-# CTRL-b l # move to previously selected window
-# CTRL-b f searchterm # search for window
-# CTRL-B & # kill current window
-# CTRL-b l # last window
-
-# ---------------------------------------------
-# PANES (Split window)
-# ---------------------------------------------
-# Split window into two vertical panes
-tmux split-window # CTRL-b "
-
-# Split window into two horizontal panes
-tmux split-window -h # CTRL-b %
-
-# Break current pane into a new window
-# CTRL-b !
-
-# Kill current pane
-# CTRL-b x
-
-CTRL-B ←/→/↑/↓ # move focus to left, right, top, or bottom pane
-
-# swaps pane with another in the specified direction
-tmux swap-pane -[UDLR] # CTRL-b { # OR }
-
-# selects the next pane in the specified direction
-tmux select-pane -[UDLR]
-
-# selects the next pane in numerical order
-tmux select-pane -t :.+
-
-# Goto next pane
-# CTRL-b o
-
-# Show pane numbers, when the numbers show up type the key to goto that pane
-# CTRL-b q
-
-# Last pane
-# CTRL-b ;
-
+| Command<br/>(Key) | Session | Window | Pane |
+|:------:|:-------:|:-------:|:-----:|
+|Create|:new -s SESSION_NAME <br />|New: c <br /> Pane to Window: !|Vertical: " <br />Horizontal: %|
+|Rename|$|,||
+|List|`tmux ls`<br />s SESSION_NAME|w ||
+|Search||f SEARCH_TERM||
+|Close / Kill|:kill-session -t SESSION_NAME|&|x|
+|Previous / Next | ( / ) | p / n | Arrow Key (selects pane in specified direction) |
+|Last||l|;|
+|Select / Move to index||NUMBER|q NUMBER|
+|Swap|| :swap-window -s 3 -t 1 (Keyboard: . NUMBER) | { } |
+    
+** Other **
+```bash
 # ---------------------------------------------
 # COPY/PASTE (with emacs bindings)
 # ---------------------------------------------
 CTRL-b [ # enter copy mode
-     * press CTRL-SPACE or CTRL-@ to start selecting text
+     * SPACE to start copying text at cursor
      * move cursor to end of desired text
-     * press ALT-w to copy selected text
+     * ENTER to copy selected text
 
-CTRL-b [ # paste selected text
+CTRL-b ] # paste selected text
 
 # ---------------------------------------------
 # OTHER
@@ -519,8 +480,6 @@ tmux list-keys # lists out all bound keys, and relevant tmux command
 tmux source-file ~/.tmux.conf # reload the tmux config file. tmux default config file is in ~/.tmux.conf
 
 # CTRL-b t # show time in current pane
-# CTRL-b ? # List all keybindings
-# CTRL-b : # command prompt where you can execute any command tmux supports
 
 # Kill all tmux windows
 killall tmux
@@ -531,7 +490,7 @@ tmux -CC
 tmux -CC attach
 
 # with credit:
-# to Josh Clayton's tutorial: http://robots.thoughtbot.com/a-tmux-crash-course
+# Josh Clayton: http://robots.thoughtbot.com/a-tmux-crash-course
 # Cody: http://blog.hawkhost.com/2010/06/28/tmux-the-terminal-multiplexer/
 ```
 
@@ -1056,6 +1015,7 @@ hash, hash -r | table of where commands can be found based on usage, -r empties 
 DISCLAIMER: This is just to help someone get the basics of Vim, not for regular users
 
 #### General Notes
+Modes: Normal mode (ESC) vs insert mode (i)  vs visual mode (v)
 
 #### CLI Commands
 Command | Description
@@ -1067,20 +1027,24 @@ vim filename.txt +/abc | open file and go to first occurrence of substring
 #### Vim Commands
 Key Sequence | Description
 :------: | ------
+ESC | normal mode
+i | insert / insert mode
+** I ** | insert text at beginning of the cursor line
+v | visual mode
 $ | end of line
 0 | start of line
+** x / X ** | delete character to under/left(backspace) of cursor
 w | one word forward
-i | insert mode
 a | append
 A | append to end of line
-o | Insert line after current line
 O | Insert line above current line
+o | Insert line after current line
 2e | 2 words forward, at end of line
 b | before
-10j | down ten lines
+** 10j ** | down ten lines
 10k | up ten lines
-dw | delete word
-d$ | delete to end of line
+** dw / p ** | delete word / paste
+** d$ / p ** | delete to end of line / paste
 u | undo last
 U | Undo all on line
 Ctrl-R | undo the undos
@@ -1089,20 +1053,25 @@ dd/p | cut and paste
 ? | search for search term going backward
 n | forward when looking for a search term
 N | backward when looking for a search term
-r then character | replace character
-ce | replace word
+** r ** then character | replace character
+** ce ** | replace word
 gg | top of file
 G | bottom of file
 Ctrl-G | Displays location in file and file status
 25G | Goto line
-% | go to matching parentheses
-3igoESC twice | insert go 3 times
-/ # | next/previous of the word that you are at
+** % ** | go to matching parentheses, bracket, curly brace
+** XiTEXT ** (then ESC twice) | insert TEXT X times
+** * / # ** | next/previous of the word that you are at
+** fCHARACTER ** | search for character on line, can add number in front for Xth occurence, F is backwards
+** . ** | repeat last command
+J | join line to next line
+
 ^F, ^B | page up and page down
 :s/old/new/g | substitute for all 'old' on a line
 :%s/old/new/g | substitute for all 'old' in the file
 :w | save
 :w filename.txt | save to file
+:e file.txt | open file
 Ctrl-D | see completions when typing a colon
 :wq | save and quit
 :q! | quit without saving
