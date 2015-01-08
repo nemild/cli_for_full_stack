@@ -115,11 +115,6 @@ Flag | Description
 --color | use color
 ls -- -l | the double hyphen indicates that everything afterward should be considered an argument, not an option (the 'l' is not considered a command line flag, but an argument)
 
-#### alias: Create a command alias
-```bash
-alias m='less' # create alias m to call less command
-```
-
 #### cd: Change Directory
 ```bash
 cd [ANY DIRECTORY] # base usage
@@ -128,12 +123,15 @@ cd ~ # go to home
 cd - # go to previous directory
 cd .. # go up one directory
 (cd ~/asd && ls) # execute command in subshell, at end you are back in your current directory
-there’s also `pushd` and `popd`/ `popd +1` and `dirs` when you want to push your current location on the stack before moving to the new directory
 ```
 
-#### clear: clear screen
+#### pushd/popd: reference your working directory as a stack
 ```bash
-clear
+pushd /home/test/ # push directory to stack
+pushd /home/test/show/ # push directory to stack
+pushd /home/test/doc/ # push directory to stack
+dirs -l -p -d # list all the directories
+popd +1 # pop a particular directory from the list of directories by giving the directory ID
 ```
 
 #### mkdir: Make Directory
@@ -146,12 +144,6 @@ rmdir lets you remove an empty directory
 #### more: file perusal filter for crt viewing
 ```bash
 more test.txt # output a test.txt to the screen while pausing at each page
-```
-
-#### nice: execute a utility with an altered scheduling priority
-```bash
-nice -12 myproc # starts  process "myproc" setting the "nice" value to 12
-renice 17 -p 1134 # change the priority of job with pid 1134 
 ```
 
 #### ls: List directory contents
@@ -179,6 +171,7 @@ ls -lah
 ls -ltr # sort by time, with latest at bottom
 ls -larthG # same as above plus show hidden, human readable file size, colorize
 ```
+
 #### man: Manual
 ```bash
 man command # shows manual page for command typically using less
@@ -223,35 +216,6 @@ head -100 abc.txt # number of lines, can also do -n 100, default is 10 when not 
 head -c50 # first 50 characters
 head abc.txt def.txt # multiple files
 head -q *txt *gbk # heads of multiple files w/o delimiters
-```
-
-#### export: export shell variables
-```bash
-export EDITOR=/usr/bin/vim # set a new EDITOR variable:
-```
-
-```bash
-VAR=value # alternative syntax
-export VAR
-```
-
-Add export statements to ~/.bash_profile or ~/.profile or /etc/profile file to export variables permanently
-```bash
-$ vi ~/.bash_profile
-```
-
-#### push/pop: reference your working directory as a stack
-```bash
-pushd /home/test/ # push directory to stack
-pushd /home/test/show/ # push directory to stack
-pushd /home/test/doc/ # push directory to stack
-dirs -l -p -d # list all the directories
-popd +1 # pop a particular directory from the list of directories by giving the directory ID
-```
-
-#### source: executes the content of the file passed as argument, in the current shell. It has a synonym in '.' (period)
-```bash
-source ~/.aliases # executes ~/.aliases script 
 ```
 
 #### tail: Display the last part of a file
@@ -641,8 +605,10 @@ ping www.google.com | see if a site is up and you can connect to it
 yes | print y forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
 script | record everything typed in a text file
 file abc.txt | get info on file type
+clear | clear screen
 
 ## [Advanced](#advanced)
+
 #### ifconfig: Configure network interface
 ```bash
 ifconfig -a # view all network interfaces
@@ -914,7 +880,7 @@ curl -sS https://getcomposer.org/installer | php # pull down a php file and run 
 ```
 
 ## [Sysadmin Basics](#sysadmin_basics)
-This section is for things related to user management, filesystem, or the general system.
+This section is for things related to user management, process management, filesystem, or the general system.
 
 #### sudo
 ```bash
@@ -969,6 +935,37 @@ make install
 ./configure
 make
 sudo make install
+```
+
+#### nice: execute a utility with an altered scheduling priority
+```bash
+nice -12 myproc # starts  process "myproc" setting the "nice" value to 12
+renice 17 -p 1134 # change the priority of job with pid 1134 
+```
+
+#### alias: Create a command alias
+```bash
+alias m='less' # create alias m to call less command
+```
+
+#### export: export shell variables
+```bash
+export EDITOR=/usr/bin/vim # set a new EDITOR variable:
+```
+
+```bash
+VAR=value # alternative syntax
+export VAR
+```
+
+Add export statements to ~/.bash_profile or ~/.profile or /etc/profile file to export variables permanently
+```bash
+$ vi ~/.bash_profile
+```
+
+#### source: executes the content of the file passed as argument, in the current shell. It has a synonym in '.' (period)
+```bash
+source ~/.aliases # executes ~/.aliases script 
 ```
 
 #### chown: Change ownership (chown)
