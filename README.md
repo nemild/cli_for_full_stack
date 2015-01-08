@@ -19,9 +19,12 @@ A prioritized list of the most important CLI commands for full stack engineers
 * [Bro Pages](http://bropages.org/): Lists popular options for many of the most used commands, crowdsourced and upvoted (used to augment several commands below)
 * [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
 * [Sobel's Guide to Linux Command's Editors, and Shell Programming](http://www.amazon.com/Practical-Guide-Commands-Editors-Programming/dp/013308504X/ref%3Dsr_1_1): One of the more popular Linux books, includes examples and many basics (perl, bash programming, python) - fairly distribution agnostic
+* [Dotfiles collections on github](dotfiles.github.io): Awesome set of repositories with customized dotfiles
+* [Setting up my perfect dev environment on OSX 10.9 using Chef / Kitchenplan](http://vanderveer.be/setting-up-my-perfect-dev-environment-on-osx-10-9-using-chef-kitchenplan/): A series of articles on setting up ultimate development environment on Mac OS X 10.9 - for instructions on other versions of OS X see the previous articles
 
 ##### Authors
 * Nemil Dalal (nemild at gmail)
+* Evren Cakir (code at evrencakir)
 * *[If you spend more than 15 mins on this doc, add your name here]*
 
 ## Table of Contents
@@ -72,6 +75,7 @@ Keyboard Shortcut | Description
 #### Previous Commands or Arguments
 ```bash
 history # see list of previous typed commands
+history -c # clear list of previous typed commands
 history | grep command # list out previous calls with command, then do !123 to run where 123 is the number shown for the command
 !! # run previous command
 !string # run most recent command starting with this string
@@ -81,7 +85,7 @@ history | grep command # list out previous calls with command, then do !123 to r
 ^abc^def # replace first argument with second argument in previous command (only for first occurrence)
 !!:gs/foo/bar # run last command replacing all foo with bar
 
-!:$ # last argument of previous command
+!:$ # last argument of previous command (also !$)
 !:0 # first argument of previous command (and number can be incremented for other args)
 !string # run most recent argument starting with string
 fc # edit your last command in your editor and execute it
@@ -103,12 +107,18 @@ cd abc && ls # && means run second command only if first succeeds, compare to ||
 Flag | Description
 :---: | ---
 -v | verbose or invert
+--version | show version
 -i | ignore case
 -w | ignore whitespace
 -u | user
 -h | pretty format the size (from bytes to mb/kb/etc), if using this when sorting, use sort -h (only non-Mac)
 --color | use color
 ls -- -l | the double hyphen indicates that everything afterward should be considered an argument, not an option
+
+#### alias: Create a command alias
+```bash
+alias m='less' # create alias m to call less command
+```
 
 #### cd: Change Directory
 ```bash
@@ -121,11 +131,27 @@ cd .. # go up one directory
 there’s also `pushd` and `popd`/ `popd +1` and `dirs` when you want to push your current location on the stack before moving to the new directory
 ```
 
+#### clear: clear screen
+```bash
+clear
+```
+
 #### mkdir: Make Directory
 ```bash
 mkdir dirname # base usage
 mkdir -p dirname1/dirname2 # make all nested directories that don’t exit
 rmdir lets you remove an empty directory
+```
+
+#### more: file perusal filter for crt viewing
+```bash
+more test.txt # output a test.txt to the screen while pausing at each page
+```
+
+#### nice: execute a utility with an altered scheduling priority
+```bash
+nice -12 myproc # starts  process "myproc" setting the "nice" value to 12
+renice 17 -p 1134 # change the priority of job with pid 1134 
 ```
 
 #### ls: List directory contents
@@ -144,6 +170,7 @@ ls -i # print inode
 ls | wc -l # number of items in directory (including subdirectories)
 ls -R . #recursively list the files and directories
 ls | grep -v *.rb # filter out unwanted results, like .rb files
+ls -lart # list files in the current dir by the last time they were modified. (-l = long, -a = all, -r = reverse, -t = order by mod time)
 ```
 
 Popular usages  
@@ -170,9 +197,10 @@ man 2 ls # go to section 2 of ls, search for what each section number means
 # TODO: Any other feedback on using man pages effectively
 ```
 
-#### cat: Print a file
+#### cat: Print a file to the screen
 ```bash
 cat abc.txt def.txt # can use on multiple files
+cat *.txt # output all files matching *.txt
 cat -n # number lines starting at 1, can also call nl -b a
 cat -b # number non-blank lines, can also call nl -b t
 cat -T # Show tabs in a file
@@ -197,12 +225,42 @@ head abc.txt def.txt # multiple files
 head -q *txt *gbk # heads of multiple files w/o delimiters
 ```
 
+#### export: export shell variables
+```bash
+export EDITOR=/usr/bin/vim # set a new EDITOR variable:
+```
+
+```bash
+VAR=value # alternative syntax
+export VAR
+```
+
+Add export statements to ~/.bash_profile or ~/.profile or /etc/profile file to export variables permanently
+```bash
+$ vi ~/.bash_profile
+```
+
+#### push/pop: reference your working directory as a stack
+```bash
+pushd /home/test/ # push directory to stack
+pushd /home/test/show/ # push directory to stack
+pushd /home/test/doc/ # push directory to stack
+dirs -l -p -d # list all the directories
+popd +1 # pop a particular directory from the list of directories by giving the directory ID
+```
+
+#### source: executes the content of the file passed as argument, in the current shell. It has a synonym in '.' (period)
+```bash
+source ~/.aliases # executes ~/.aliases script 
+```
+
 #### tail: Display the last part of a file
 ```bash
 # head flags from above apply here
 tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs), see the less +F command for a potential replacement
 tail -F # same as -f except If the file is replaced or truncated, follow the new file that is now pointed to by the filename
 tail -f "my_server.log" | grep "my process" # Filter lines containing a match for "my process" from a text stream
+tail -f /var/log/*.log # tail all log files 
 ```
 
 #### echo: Write arguments to the standard output
@@ -228,6 +286,7 @@ ln -sf # if target file link exists, unlink so that the new link may occur
 ```bash
 grep 'substring' --color file1.txt file2.txt # search for substring can be used with multiple files
 grep 'substring' -riI --color . # recursive, ignore case, ignore binary file matches, highlight match in color, a common usage
+grep -i # case insensitive
 grep -v # invert
 grep -c # incidence count
 grep -x # exact match
@@ -252,6 +311,7 @@ TODO Popular usages
 #### find: Walk a file hierarchy (search for files etc. matching certain criteria, can also be used with xargs/parallel )
 ```bash
 find . -name "hello.txt" # standard usage
+find / -name "ice.log" # search filesystem root for files named ice.log 
 find . -name “abc” 2>/dev/null # output to dev null when doing global search, and don't want to discard errors (e.g., file is not accessible because not a super user)
 -iname "abc.txt" OR -iname "*.txt" # search for case insensitive
 -mtime -7 # modified time is within seven days previous to today, can also use 7s, 7m, 7h, 7d, 7w to specify seconds/minutes/hours/weeks
@@ -308,9 +368,14 @@ Bzip2 is better (below), but gzip is commonly used
 #### bzip2: 
 Similar options to gzip (though not exact)
 ```bash
-bzip2 -v filetocompress # verbose
-bunzip2 letter.bz2 # uncompress, can also do bzip2 -d
-bzcat file.bz2 # view text of file without saving uncompressed file
+zip -r archive_name.zip folder_to_compress
+```
+
+#### zip – Cross platform zip (Mac OS X) 
+```bash
+zip -r archive_name.zip folder_to_compress #compress
+unzip archive_name.zip #extract
+zip -r -X archive_name.zip folder_to_compress #make a zip and exclude invisible Mac resource files such as “_MACOSX” or “._Filename” and .ds store files
 ```
 
 #### sort
@@ -414,6 +479,31 @@ scp -r # recursively copy entire directories
 scp -v # verbose mode
 ```
 
+#### screen: Screen manager with VT100/ANSI terminal emulation
+
+```bash
+screen #Start a new screen session
+ctrl-a v #Get screen version
+ctrl-a ? #Get help
+ctrl-a-c #Make new screen
+ctrl-a n #Jump to next screen
+ctrl-a p #Jump to previous screen
+ctrl-a ctrl-a #Jump between screens (flipping between the same two screens)
+ctrl-a n #Jump to screen number n
+ctrl-a shift-a #Rename current screen
+ctrl-a w #Show list of active screens
+ctrl-a “ #A different way of switching screens 
+ctrl-a k #Kill/get rid of a screen
+ctrl-a \ #Quit screen and kill all of your windows
+ctrl-a d #Detach from session without destroying it (programs in the screen instance to continue to run)
+screen –r #Attach to a detached screen
+screen –ls #Get list of running screen sessions
+screen –r 1835 #Reattach to a specific session with id 1835
+screen –x #Share the session (attach to a session on two separate computers or terminal windows)
+ctrl-a ctrl-[ #Enter into move around mode with vi commands (use to scroll up and read previous term output)
+```
+
+
 #### tmux: Terminal Multiplexer
 Enables a number of terminals to be accessed and controlled from a single terminal; great for multiple panes/windows/sessions (windowing) and persistent state on remote servers  
 
@@ -444,7 +534,7 @@ tmux kill-session -t <session>
 # CTRL-b : # command prompt where you can execute any command tmux supports
 ```
 
-** Main Keyboard Shorcuts **
+** Main Keyboard Shortcuts **
 Put the prefix key before keys listed below (default: CTRL-B)
 
 | Command<br/>(Key) | Session | Window | Pane |
@@ -845,6 +935,7 @@ wc < abc.txt # use this instead of cat abc.txt \| wc, saves a new process, impor
 (head -5; tail -5) < data # explore first 5 and last 5 lines
 head -3 data* | cat # list out first three lines of all files
 time read # simple stopwatch, Ctrl-C to stop
+curl -sS https://getcomposer.org/installer | php # pull down a php file and run it with the php interpreter
 ```
 
 ## [Sysadmin Basics](#sysadmin_basics)
@@ -858,6 +949,26 @@ sudo !! # run previous command as sudo
 ```
 
 #### Package management - apt-get, brew, and install from source
+
+```bash
+sudo apt-get upgrade #upgrade packages
+```
+
+```bash
+apt-get -y update && apt-get upgrade && reboot #update, upgrade all packages, and reboot
+```
+
+```bash
+wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -;
+sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'; #add a repository
+```
+
+```bash
+sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
+sudo apt-get remove g++ # remove package
+sudo apt-get update # update list of packages available
+```
+
 ```bash
 # apt-get is the main package manger for Ubuntu Linux
 sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
@@ -984,6 +1095,10 @@ kill -SIGTERM 2931 # can use any of the signals above
 killall command # kills all instances of command owned by user (root user kills every process)
 ```
 
+#### pkill: kill all instances of a command
+```bash
+pkill -f httpd # kills all instances of httpd dameon owned by user
+```
 
 #### Other commands
 Command | Description
