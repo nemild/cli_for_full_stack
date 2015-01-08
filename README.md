@@ -479,31 +479,6 @@ scp -r # recursively copy entire directories
 scp -v # verbose mode
 ```
 
-#### screen: Screen manager with VT100/ANSI terminal emulation
-
-```bash
-screen #Start a new screen session
-ctrl-a v #Get screen version
-ctrl-a ? #Get help
-ctrl-a-c #Make new screen
-ctrl-a n #Jump to next screen
-ctrl-a p #Jump to previous screen
-ctrl-a ctrl-a #Jump between screens (flipping between the same two screens)
-ctrl-a n #Jump to screen number n
-ctrl-a shift-a #Rename current screen
-ctrl-a w #Show list of active screens
-ctrl-a “ #A different way of switching screens 
-ctrl-a k #Kill/get rid of a screen
-ctrl-a \ #Quit screen and kill all of your windows
-ctrl-a d #Detach from session without destroying it (programs in the screen instance to continue to run)
-screen –r #Attach to a detached screen
-screen –ls #Get list of running screen sessions
-screen –r 1835 #Reattach to a specific session with id 1835
-screen –x #Share the session (attach to a session on two separate computers or terminal windows)
-ctrl-a ctrl-[ #Enter into move around mode with vi commands (use to scroll up and read previous term output)
-```
-
-
 #### tmux: Terminal Multiplexer
 Enables a number of terminals to be accessed and controlled from a single terminal; great for multiple panes/windows/sessions (windowing) and persistent state on remote servers  
 
@@ -534,12 +509,12 @@ tmux kill-session -t <session>
 # CTRL-b : # command prompt where you can execute any command tmux supports
 ```
 
-** Main Keyboard Shortcuts **
+**Main Keyboard Shortcuts**  
 Put the prefix key before keys listed below (default: CTRL-B)
 
 | Command<br/>(Key) | Session | Window | Pane |
 |:------:|:-------:|:-------:|:-----:|
-|Create|:new -s SESSION_NAME <br />|New: c <br /> Pane to Window: !|Vertical: " <br />Horizontal: %|
+|Create|:new -s SESSION_NAME <br />|New: c <br /> *Pane to Window:* !|*Vertical:* " <br />*Horizontal:* %|
 |Rename|$|,||
 |List|`tmux ls`<br />s SESSION_NAME|w ||
 |Search||f SEARCH_TERM||
@@ -549,7 +524,7 @@ Put the prefix key before keys listed below (default: CTRL-B)
 |Select / Move to index||NUMBER|q NUMBER|
 |Swap|| :swap-window -s 3 -t 1 (Keyboard: . NUMBER) | { } |
     
-** Other **
+**Other**  
 ```bash
 # ---------------------------------------------
 # COPY/PASTE (with emacs bindings)
