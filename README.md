@@ -113,7 +113,7 @@ Flag | Description
 -u | user
 -h | pretty format the size (from bytes to mb/kb/etc), if using this when sorting, use sort -h (only non-Mac)
 --color | use color
-ls -- -l | the double hyphen indicates that everything afterward should be considered an argument, not an option
+ls -- -l | the double hyphen indicates that everything afterward should be considered an argument, not an option (the 'l' is not considered a command line flag, but an argument)
 
 #### alias: Create a command alias
 ```bash
@@ -1119,11 +1119,11 @@ Key Sequence | Description
 :------: | ------
 ESC | normal mode
 i | insert / insert mode
-** I ** | insert text at beginning of the cursor line
+I | insert text at beginning of the cursor line
 v | visual mode
 $ | end of line
 0 | start of line
-** x / X ** | delete character to under/left(backspace) of cursor
+x / X | delete character to under/left(backspace) of cursor
 w | one word forward
 a | append
 A | append to end of line
@@ -1131,10 +1131,10 @@ O | Insert line above current line
 o | Insert line after current line
 2e | 2 words forward, at end of line
 b | before
-** 10j ** | down ten lines
+10j | down ten lines
 10k | up ten lines
-** dw / p ** | delete word / paste
-** d$ / p ** | delete to end of line / paste
+dw / p | delete and cut word / paste (use 'y' to copy instead of delete)
+d$ / p | delete and cut to end of line / paste
 u | undo last
 U | Undo all on line
 Ctrl-R | undo the undos
@@ -1143,17 +1143,17 @@ dd/p | cut and paste
 ? | search for search term going backward
 n | forward when looking for a search term
 N | backward when looking for a search term
-** r ** then character | replace character
-** ce ** | replace word
+r then character | replace character
+ce | replace word
 gg | top of file
 G | bottom of file
 Ctrl-G | Displays location in file and file status
 25G | Goto line
-** % ** | go to matching parentheses, bracket, curly brace
-** XiTEXT ** (then ESC twice) | insert TEXT X times
-** * / # ** | next/previous of the word that you are at
-** fCHARACTER ** | search for character on line, can add number in front for Xth occurence, F is backwards
-** . ** | repeat last command
+% | go to matching parentheses, bracket, curly brace
+XiTEXT (then ESC twice) | insert TEXT X times
+* / # | next/previous of the word that you are at
+fCHARACTER | search for character on line, can add number in front for Xth occurence, F is backwards
+. | repeat last command
 J | join line to next line
 
 ^F, ^B | page up and page down
