@@ -19,7 +19,6 @@ A prioritized list of the most important CLI commands for full stack engineers
 * [Bro Pages](http://bropages.org/): Lists popular options for many of the most used commands, crowdsourced and upvoted (used to augment several commands below)
 * [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
 * [Sobel's Guide to Linux Command's Editors, and Shell Programming](http://www.amazon.com/Practical-Guide-Commands-Editors-Programming/dp/013308504X/ref%3Dsr_1_1): One of the more popular Linux books, includes examples and many basics (perl, bash programming, python) - fairly distribution agnostic
-* [Dotfiles collections on github](dotfiles.github.io): Awesome set of repositories with customized dotfiles
 * [Setting up my perfect dev environment on OSX 10.9 using Chef / Kitchenplan](http://vanderveer.be/setting-up-my-perfect-dev-environment-on-osx-10-9-using-chef-kitchenplan/): A series of articles on setting up ultimate development environment on Mac OS X 10.9 - for instructions on other versions of OS X see the previous articles
 
 ##### Authors
@@ -1167,13 +1166,15 @@ Ctrl-D | see completions when typing a colon
 
 #### Commonly Used Aliases
 Use the following command to see your 25 most used commands (helps you determine which aliases to setup)
-```
+```bash
 # this command finds the top 25 base commands (excluding arguments)
  history|awk '{print $2}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -r | head -25
 
  # this includes arguments
  history|awk '{print $2, $3}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -n
- ```
+```
+
+Basic aliases are below, see [Github dotfiles](http://dotfiles.github.io) + the packages for zsh (like 'oh my zsh' and 'prezto') for many default aliases  
 
 ```bash
 alias h='history | tail'
