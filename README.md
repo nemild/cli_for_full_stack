@@ -260,6 +260,8 @@ ln -sf # if target file link exists, unlink so that the new link may occur
 ```
 
 #### grep: File Pattern Searcher
+For most programmers, it is preferable to use [ag](https://github.com/ggreer/the_silver_searcher) or [ack](http://beyondgrep.com/)  
+
 ```bash
 grep 'substring' --color file1.txt file2.txt # search for substring can be used with multiple files
 grep 'substring' -riI --color . # recursive, ignore case, ignore binary file matches, highlight match in color, a common usage
@@ -284,6 +286,20 @@ grep -R --include="*.py" "pattern" /path/to/dir # grep recursively through files
 grep -m 1 "needle" *.txt # show only the first match in each file
 ```
 
+#### ack: grep-like tool
+Optimized for programmers searching source codel; ignores .git folder, minified files, etc.  
+
+Many ack flags are similar or the same as grep; most programmers using git should use [ag](https://github.com/ggreer/the_silver_searcher) which is faster than ack and has a few other benefits (respecting .gitignore, etc.)  
+
+```bash
+ack substring # search for substring
+ack -cl # list filenames with matches
+ack -ch # list number of matches
+ack --python # restrict search to a language
+ack -f . # list all files that will be searched
+ack -g substring # look for files in subdirectories that has substring in its path
+```
+
 #### find: Walk a file hierarchy (search for files etc. matching certain criteria, can also be used with xargs/parallel )
 ```bash
 find . -name "hello.txt" # standard usage
@@ -301,6 +317,7 @@ find -maxdepth 1 # only list in current directory, not subdirectories
 find -perm 444 # search based on permissions
 
 # Popular usages
+find . | wc -l # number of files in directory and subdirectories
 find . -name "*.foo" -exec tail {} \; # output the last 10 lines in each .foo file in directory and subdirectories
 find . -iname '*foo*' # find all files that contain foo in their name
 find . -type d -empty -delete # find and remove empty directories
@@ -600,9 +617,9 @@ curl http://www.example.com/abc.json | jq '.' # prettify json
 curl http://www.example.com/abc.json | jq '.[0]' # restrict output to first element in array
 curl http://www.example.com/abc.json | jq '.abc.def' # restrict output to "def" key within "abc" key
 jq 'length' < abc.json # number of elements in JSON array
-jq '.[0] | {message: .commit.message, name: .commit.committer.name}' < abc.json # create two new keys with the associated data from the input(can nest)
+jq '.[0] | {message: .commit.message, name: .commit.committer.name}' < abc.json # create two new keys with the associated data from the input (can nest)
 
--S # sort keys in alphabetica order
+-S # sort keys in alphabetical order
 # Just the basics, see docs for more details: http://stedolan.github.io/jq/manual/
 ```
 
