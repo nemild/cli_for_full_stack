@@ -548,7 +548,7 @@ curl -O http://www.example.com/index.html # output to the remote filename on loc
 curl -v # verbose
 curl -X POST # can use the standard verbs, plus custom ones
 curl -H "Accept: application/json" # set custom headers, can add multiple by using multiple flags
-curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server, automatically POST, can also separate by separate -d arguments rather than an &
+curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server in body, automatically POST, can also separate by separate -d arguments rather than an &
 
 # Sending data
 curl -d @invoice.pdf -X POST http://devnull-as-a-service.com/dev/null # post a file
@@ -592,10 +592,17 @@ tee abc.txt def.txt # output to multiple files
 ```
 
 #### jq: JSON Command Line Tool
-not standard, and yes there could be a large debate of this command, but very useful in today’s world of API’s  
+Useful for cURL-ing APIs and json files, non-standard so install with package manager of choice
 
 ```bash
-curl http://www.example.com/abc.json # jq '.'
+curl http://www.example.com/abc.json | jq '.' # prettify json
+curl http://www.example.com/abc.json | jq '.[0]' # restrict output to first element in array
+curl http://www.example.com/abc.json | jq '.abc.def' # restrict output to "def" key within "abc" key
+jq 'length' < abc.json # number of elements in JSON array
+jq '.[0] | {message: .commit.message, name: .commit.committer.name}' < abc.json # create two new keys with the associated data from the input(can nest)
+
+-S # sort keys in alphabetica order
+# Just the basics, see docs for more details: http://stedolan.github.io/jq/manual/
 ```
 
 #### Other commands
