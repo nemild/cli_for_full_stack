@@ -62,7 +62,7 @@ Keyboard Shortcut | Description
 *Ctrl-S/Ctrl-Q* | stop output to screeen (for verbose commands) / resume output to screen
 *Ctrl-T* | swap previous two characters (used for misspellings)
 *Meta-T* | swap previous two words
-*ESC-backspsace* | delete previous word
+*ESC-BACKSPACE* | delete previous word
 *ESC-d* | delete next word
 
 ## [Getting around the command line](#getting_around_the_command_line)
@@ -86,7 +86,6 @@ history | grep command # list out previous calls with command, then do !123 to r
 
 !:$ # last argument of previous command (also !$)
 !:0 # first argument of previous command (and number can be incremented for other args)
-!string # run most recent argument starting with string
 fc # edit your last command in your editor and execute it
 ```
 
@@ -112,6 +111,7 @@ Flag | Description
 -u | user
 -h | pretty format the size (from bytes to mb/kb/etc), if using this when sorting, use sort -h (only non-Mac)
 --color | use color
+-r | reverse listing (descending order) or recursive
 ls -- -l | the double hyphen indicates that everything afterward should be considered an argument, not an option (the 'l' is not considered a command line flag, but an argument)
 
 #### cd: Change Directory
@@ -129,8 +129,9 @@ cd .. # go up one directory
 pushd /home/test/ # push directory to stack
 pushd /home/test/show/ # push directory to stack
 pushd /home/test/doc/ # push directory to stack
-dirs -l -p -d # list all the directories
-popd +1 # pop a particular directory from the list of directories by giving the directory ID
+dirs -v # list all directories in stack with index number
+popd # pop the most recent directory from stack and cd into it
+popd +1 # pop a particular directory from the list of directories (without going to that directory)
 ```
 
 #### mkdir: Make Directory
@@ -140,18 +141,14 @@ mkdir -p dirname1/dirname2 # make all nested directories that don’t exit
 rmdir lets you remove an empty directory
 ```
 
-#### more: file perusal filter for crt viewing
-```bash
-more test.txt # output a test.txt to the screen while pausing at each page
-```
-
 #### ls: List directory contents
 ```bash
 ls -l # provide information (ownership, permissions, file size, modification date)
 ls -h # make disk usage info pretty (kb, mb, etc.) - not bytes
-ls -r # reverses order
-ls -t # sort by time modified
+ls -r # reverses order, now ascending rather than descending
+ls -t # sort by time modified, most recent at top by default (descending)
 ls -G # colorize
+ls -a # show directories entries that begin with a dot ('.'), i.e., show hidden directories
 ls -S # sort files by size
 ls -F #  Display a slash (`/') immediately after each pathname that is a directory, an asterisk (`*') after each that is executable, an at sign (`@') after each symbolic link, an equals sign (`=') after each socket, a percent sign (`%') after each whiteout, and a vertical bar (`|') after each that is a FIFO
 ls -d */ # directories only
@@ -186,12 +183,12 @@ man 2 ls # go to section 2 of ls, search for what each section number means
 # Most users find their info in sections 1 (User commands), 6(Games), and 7(Miscellaneous)
 # use with whatis (complete word matches) and apropos/man -k (partial word matches), to determine what commands are available
 # can also use info or help
-# TODO: Any other feedback on using man pages effectively
 ```
 
 #### cat: Print a file to the screen
 ```bash
 cat abc.txt def.txt # can use on multiple files
+cat abc.txt def.txt > new.txt # concatenate multiple files in order into a single file
 cat *.txt # output all files matching *.txt
 cat -n # number lines starting at 1, can also call nl -b a
 cat -b # number non-blank lines, can also call nl -b t
@@ -200,7 +197,20 @@ Note: Don’t pipe a cat ('cat hello | dosomething'), instead 'dosomething < abc
 ```
 
 #### less: Print a file with pagination
-used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search. q to quit, arrow keys to move up and down  
+used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search (/ and ?, n and N). q to quit, arrow keys (and vim navigation keys) to move up and down
+
+# Top and bottom
+g - go to start of file
+G - go to end of file
+
+# Mark
+mLETTER - mark position with letter
+'LETTER # return to letter
+
+# Move among files
+:e filename # open file
+:n # next file
+:p # previous file
 ```bash
 less filename.txt # print file with pagination
 less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to have search terms highlighted
@@ -221,24 +231,27 @@ head -q *txt *gbk # heads of multiple files w/o delimiters
 ```bash
 # head flags from above apply here
 tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs), see the less +F command for a potential replacement
-tail -F # same as -f except If the file is replaced or truncated, follow the new file that is now pointed to by the filename
+tail -F # same as -f except if the file is replaced or truncated, follow the new file that is now pointed to by the filename
 tail -f "my_server.log" | grep "my process" # Filter lines containing a match for "my process" from a text stream
 tail -f /var/log/*.log # tail all log files 
+tail -f /var/log/syslog -f /var/log/auth.log # multiple files
 ```
 
 #### echo: Write arguments to the standard output
 ```bash
 echo "line1\nline2" >> .bash_profile # append string to end of .bash_profile, quick way to edit
-echo "line1\nline2" > output.txt # quick way to create file with text, compare to touch and then nano/vi
+echo "line1\nline2" > output.txt # quick way to create file with text, compare to touch and then nano/vim
 echo -n "Hello" # this line is not followed by a newline as is standard
 echo -e "Hello\nWorld" # interpret backslash escape sequences like newline ('\n') and tab ('\t')
+echo -e "\nalias ..="cd.."' >> .bash_profile # quickly append text to the end of a file
 echo $var # print shell variable
 echo $(pwd) >> log # way to run a command and append to file
 echo "ls -l" | at midnight # execute command at a certain time
 echo {a..z} # print a through z, can be used for numbers as well
 ```
 
-#### ln: Make link (used primarily for symbolic or soft link)
+#### ln: Make link
+Used primarily for symbolic or soft link
 ```bash
 ln -s /a.out b.out # create symbolic link, a pointer to the original file - use to create a pointer rather than a deep copy, ls -l will show what a symbolic link points to, make sure to use absolute link path for the source file/dir
 ln -sb # backup of existing files if overwriting
@@ -269,7 +282,6 @@ grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0
 grep -R --include="*.py" "pattern" /path/to/dir # grep recursively through files of a certain type, such as .py files
 grep -m 1 "needle" *.txt # show only the first match in each file
 ```
-TODO Popular usages  
 
 #### find: Walk a file hierarchy (search for files etc. matching certain criteria, can also be used with xargs/parallel )
 ```bash
@@ -295,9 +307,8 @@ find . -type f -empty -delete # find and remove empty files
 find . -type d -ctime -5 # find all directories created in the last 5 days
 find ./ -not -type d -printf "%T+ %p\n" | sort | tail -1 # find last modified file in currenct directory
 find -L . -type l # find broken sym links
-find ~/chat -name *.txt | xargs grep 'chocolate' # grep for term in each matched file
+find ~/chat -name *.txt | xargs grep 'substring' # grep for term in each matched file
 ```
-TODO Popular usages  
 
 #### jobs: (and fg and bg)
 Job is a program you interactively start that is not a daemon. Jobs in background that required input are automatically stopped.
@@ -305,10 +316,10 @@ Job is a program you interactively start that is not a daemon. Jobs in backgroun
 jobs # list out jobs, states are Running, Stopped; + is most recent job that is still running, - is second most recent
 sleep 10000 & # start job in background
 sleep 100000 # start job in foreground, then Ctrl-Z to suspend, each new job is higher number than others currently running
-bg 2 # background the suspended job (assuming the number is 2), bg on its own will background the highest numbered job
-fg 1 # bring job 1 to foreground, also can do %1, fg on its own will foreground the most recent/highest numbered job
+bg %2 # background the suspended job (assuming the number is 2), bg on its own will background the highest numbered job
+fg %1 # bring job 1 to foreground, also can do %1, fg on its own will foreground the most recent/highest numbered job
 fg %find # search for starting of string
-fg %?ace # search for sustring
+fg %?ace # search for substring
 kill %2 # kill job number 2
 ```
 
@@ -347,12 +358,12 @@ sort abc.txt def.txt # ascending, can do multiple files
 sort /path/to/directory/*.csv # sort all files
 
 sort -r # descending, z to a, 10000 to 1
-sort -R # randomize
+sort -n # sort according to numerical value on line (even if there is other text on the line)
+sort -R # randomize, GNU sort
 sort -f # ignore case
-sort -u # unique only
-sort -n # sort according to numerical value
+sort -u # show max 1 of each unique element
 sort -k 2 # start at key 2 (used for seprated columns, like the history command)
-sort -h # sort by human readable size (use with -h on another command, like du -h), only usable on non-Mac
+sort -h # sort by human readable size (use with -h on another command, like du -h), GNU sort
 ```
 
 #### uniq
@@ -361,11 +372,10 @@ Note: only compares adjacent lines for equality, so typically need to sort in ad
 ```bash
 uniq -c # give incidence of line, will show repeated only once
 uniq -d # only output duplicated items, single time
-uniq -u # only output lines not repeated
+uniq -u # only output lines not repeated (different from sort -u)
 uniq -i # case insensitive
 
 uniq -cd # Show count of lines that have duplicates
-uniq -C # count number of duplicates
 ```
 
 #### wc: Word Count
@@ -389,7 +399,7 @@ ssh -D 1234 hostname # use hostname as a SOCKS proxy on localhost:1234
 #### mv: Move file from src to dest
 ```bash
 mv src_file_or_directory dest_file_or_directory # base usage
-mv srcfile srcfile srcfile destdirectory
+mv srcfile srcfile srcfile destdirectory # can move multiple sources at once
 mv hello.{txt,old} # quick rename
 ```
 
@@ -398,7 +408,6 @@ mv hello.{txt,old} # quick rename
 cp src dest # base usage
 cp -r src dest # recursive
 ```
-
 
 #### rm: Remove file
 ```bash
@@ -409,15 +418,21 @@ rm !(*.foo\|*.bar\|*.baz) # delete everything but
 ```
 
 #### diff: Compare two files
+first lines in output refer to source lines, then a letter (a = add/+, c = change/!, d = delete/-), and then destination lines
 ```bash
+-c # context mode
+-u # unified mode
+-y # side by side
+
+-b # ignore things that change the whitespace only
 -w # ignore all space
+-B # ignore blank lines
 -i # ignore case
--E # ignore tab expansion
+
 -a # treat file as text
 -C 3 # output num of copied context, 3 lines is default
--U # outpt num of unified context, 3 lines is default
--q # show only that the files differ
--y # side by side
+-U # output num of unified context, 3 lines is default
+-q # show only that the files differ, useful for scripts
 diff -r DIRECTORY1 DIRECTORY2 # show the difference between two directories
 diff <(sort file1) <(sort file2) # show the difference between two files
 ```
@@ -531,11 +546,12 @@ curl -O http://www.example.com/index.html # output to the remote filename on loc
 
 # Common Options
 curl -v # verbose
+curl -X POST # can use the standard verbs, plus custom ones
+curl -H "Accept: application/json" # set custom headers, can add multiple by using multiple flags
+curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server, automatically POST, can also separate by separate -d arguments rather than an &
 
 # Sending data
 curl -d @invoice.pdf -X POST http://devnull-as-a-service.com/dev/null # post a file
-curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server, automatically POST, can also separate by separate -d arguments rather than an &
-curl http://www.example.com/index.html -o abc.html # output to file
 curl -d '{"user": {"name": "zaiste"}}' -H "Content-Type: application/json" http://server/
 curl --data-urlencode # 
 curl --form upload=@localfilename --form press=OK [URL] |
@@ -550,7 +566,7 @@ curl ifconfig.me/port # get port
 ```bash
 wget http://www.example.com/xyz.html # get file and save as xyz.html
 wget -O abc.html http://www.example.com/def.html # output to file
-wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted downlaod
+wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted download
 wget -i download-file-list.txt # download entire file list, file list has URLs listed one per line
 wget --mirror -p --convert-links -P ./localdirectory http://www.example.com/index.html # convert links converts links to local, -p downloads all files to view, -P saves to local directory
 wget -w 2 -r -np -k -p http://www.stanford.edu/class/cs106b # recursively download an entire site, waiting 2 seconds between hits (courtesy Stanford Startup Engineering class)
@@ -587,7 +603,8 @@ Command | Description
 :----: | ----
 pwd | print working directory
 touch abc.txt | create empty file
-date / date -r 1231006505 | for unix epoch time
+date | date and time
+date +%s / date -r 1231006505 | to/from unix epoch time
 cal / cal 3 1973 | calendar of current month
 dirname/basename | basename will strip suffix provided as second argument
 whois hostname | 
@@ -695,8 +712,8 @@ system time (system calls) vs user time (time spent running user requested comma
 #### sleep
 ```bash
 sleep 5; echo "done"  # sleep for 5 seconds then proceed
-sleep 5s # sleep for 5 seconds, Linux only
-sleep 5m # sleep for 5 minutes, Linux only
+sleep 5s # sleep for 5 seconds
+sleep 5m # sleep for 5 minutes
 sleep 1d 5h 5m 10s # can create a list, Linux only
 # useful in loops to delay
 ```
@@ -724,14 +741,13 @@ sed -e 's/<[^>]*>//g' index.html # strip HTML
 seq 5 # print sequence of numbers starting at 1
 seq 1 10 # print from 1 to 10
 seq 1 3 10 # go from 1 to 10 in steps of 3
-seq -s :abc 5
+seq -s 'abc' 5 # prepend number onto string
 ```
 
 #### mktemp: Create Temp File
 ```bash
 mktemp -t abc # use abc as template
 -d # make directory instead of file
-# TODO: How to make a file with a certain extension
 ```
 
 #### watch: Execute a program periodically, showing output fullscreen
@@ -1052,6 +1068,8 @@ ps aux --sort pmem # sort by column
 # Basics:
 # 1 - SIGHUP - Hang up signal. Programs can listen for this signal and act (or not act) upon it.
 # 2 - SIGINT - Interrupt
+# 3 - SIGQUIT
+# 6 - SIGABRT
 # 15 - SIGTERM - Termination Signal, default signal sent by kill
 # 9 - SIGKILL - Kill Signal, immediate kill by the kernel
 
