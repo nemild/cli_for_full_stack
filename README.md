@@ -199,18 +199,19 @@ Note: Don’t pipe a cat ('cat hello | dosomething'), instead 'dosomething < abc
 #### less: Print a file with pagination
 used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search (/ and ?, n and N). q to quit, arrow keys (and vim navigation keys) to move up and down
 
-# Top and bottom
+*Top and bottom*
 g - go to start of file
 G - go to end of file
 
-# Mark
+*Mark*
 mLETTER - mark position with letter
 'LETTER # return to letter
 
-# Move among files
+*Move among files*
 :e filename # open file
 :n # next file
 :p # previous file
+  
 ```bash
 less filename.txt # print file with pagination
 less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to have search terms highlighted
