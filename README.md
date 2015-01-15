@@ -19,7 +19,7 @@ A prioritized list of the most important CLI commands for full stack engineers
 * [Bro Pages](http://bropages.org/): Lists popular options for many of the most used commands, crowdsourced and upvoted (used to augment several commands below)
 * [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
 * [Sobel's Guide to Linux Command's Editors, and Shell Programming](http://www.amazon.com/Practical-Guide-Commands-Editors-Programming/dp/013308504X/ref%3Dsr_1_1): One of the more popular Linux books, includes examples and many basics (perl, bash programming, python) - fairly distribution agnostic
-* [Setting up my perfect dev environment on OSX 10.9 using Chef / Kitchenplan](http://vanderveer.be/setting-up-my-perfect-dev-environment-on-osx-10-9-using-chef-kitchenplan/): A series of articles on setting up ultimate development environment on Mac OS X 10.9 - for instructions on other versions of OS X see the previous articles
+* [Digital Ocean Tutorials](https://www.digitalocean.com/community/tutorials/)
 
 ##### Authors
 * Nemil Dalal (nemild at gmail)
@@ -34,7 +34,6 @@ A prioritized list of the most important CLI commands for full stack engineers
 <a href="#command_cocktails">Command Cocktails</a>  
 
 <a href="#sysadmin_basics">Sysadmin Basics</a>  
-<a href="#vim_basics">Vim (Uber-)Basics</a>  
 <a href="#setup">Setup</a>  
 
 ## [Keyboard Shortcuts](#keyboard_shortcuts)
@@ -47,6 +46,7 @@ Keyboard Shortcut | Description
 *Ctrl-W* | cut the previous word
 *Ctrl -* | undo
 *Ctrl-U* | clears the line before the cursor position.
+*Ctrl-K* | Kill the line after the cursor
 *Ctrl-U/Ctrl-Y* | Cut line, write text and then paste line after new text
 *Ctrl-XX* | Move between start of line and current cursor position
 *Ctrl-X/Ctrl-E* | use text editor to input command, used for long or multiline commands, can also use `fc`
@@ -56,7 +56,6 @@ Keyboard Shortcut | Description
 *Ctrl-R* | search command history, start typing command, ctrl-r again to cycle through other matches in reverse chronological order
 *Ctrl-G* | Escape from search command mode (may be just easier to use Ctrl-C)
 *ESC-.* | past last argument of previous command
-*Ctrl-K* | Kill the line after the cursor
 *Ctrl-B/Ctrl-F* | Page up and down
 *Ctrl-D/Ctrl-U* | Half page up and down
 *Ctrl-S/Ctrl-Q* | stop output to screeen (for verbose commands) / resume output to screen
@@ -77,9 +76,11 @@ history # see list of previous typed commands
 history -c # clear list of previous typed commands
 history | grep command # list out previous calls with command, then do !123 to run where 123 is the number shown for the command
 !! # run previous command
-!string # run most recent command starting with this string
+!string # run most recent command starting with string
+!string:p # print most recent command starting with string
 !?string? # run most recent command with this substring
 !105 # run command number 105 from history
+!-2: Run command 2 before the current command in history
 
 ^abc^def # replace first argument with second argument in previous command (only for first occurrence)
 !!:gs/foo/bar # run last command replacing all foo with bar
@@ -97,7 +98,6 @@ cd abc && ls # && means run second command only if first succeeds, compare to ||
 \gpom # ignore the alias
  ls # leading space means don’t store in history
 ```
-
 
 ## [Basics](#basics)
 
@@ -148,7 +148,7 @@ ls -h # make disk usage info pretty (kb, mb, etc.) - not bytes
 ls -r # reverses order, now ascending rather than descending
 ls -t # sort by time modified, most recent at top by default (descending)
 ls -G # colorize
-ls -a # show directories entries that begin with a dot ('.'), i.e., show hidden directories
+ls -a # show hidden files/directories (all files/directories beginning with a dot)
 ls -S # sort files by size
 ls -F #  Display a slash (`/') immediately after each pathname that is a directory, an asterisk (`*') after each that is executable, an at sign (`@') after each symbolic link, an equals sign (`=') after each socket, a percent sign (`%') after each whiteout, and a vertical bar (`|') after each that is a FIFO
 ls -d */ # directories only
@@ -156,7 +156,7 @@ ls -p # ack -v # files only
 ls -ld dir/ # see details of a directory, not listing of items in a directory (used to see permissions)
 ls -i # print inode
 ls | wc -l # number of items in directory (including subdirectories)
-ls -R . #recursively list the files and directories
+ls -R . # recursively list the files and directories
 ls | grep -v *.rb # filter out unwanted results, like .rb files
 ls -lart # list files in the current dir by the last time they were modified. (-l = long, -a = all, -r = reverse, -t = order by mod time)
 ```
@@ -197,23 +197,11 @@ Note: Don’t pipe a cat ('cat hello | dosomething'), instead 'dosomething < abc
 ```
 
 #### less: Print a file with pagination
-used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search (/ and ?, n and N). q to quit, arrow keys (and vim navigation keys) to move up and down
+used to print files with pagination, can use standard keyboard shortcuts like page up and down, plus some vim commands like search (/ and ?, n and N). q to quit, arrow keys (and vim navigation keys) to move up and down, switch between files
 
-*Top and bottom*  
-g - go to start of file  
-G - go to end of file  
-
-*Mark*  
-mLETTER - mark position with letter  
-'LETTER # return to letter  
-
-*Move among files*  
-:e filename # open file  
-:n # next file  
-:p # previous file  
-  
 ```bash
 less filename.txt # print file with pagination
+less filename.txt filename2.txt # open multiple files
 less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to have search terms highlighted
 less -r # retain color codes, e.g., use with color options on the command you are piping to less
 less -S # chop lines that go past screen end (rather than wrapping)l
@@ -221,7 +209,6 @@ less -S # chop lines that go past screen end (rather than wrapping)l
 
 #### head: Display the first part of a file
 ```bash
-
 head -100 abc.txt # number of lines, can also do -n 100, default is 10 when not specified
 head -c50 # first 50 characters
 head abc.txt def.txt # multiple files
@@ -245,6 +232,11 @@ echo "line1\nline2" > output.txt # quick way to create file with text, compare t
 echo -n "Hello" # this line is not followed by a newline as is standard
 echo -e "Hello\nWorld" # interpret backslash escape sequences like newline ('\n') and tab ('\t')
 echo -e "\nalias ..="cd.."' >> .bash_profile # quickly append text to the end of a file
+
+# multiline
+echo "This is the first line
+This is the second line"
+
 echo $var # print shell variable
 echo $(pwd) >> log # way to run a command and append to file
 echo "ls -l" | at midnight # execute command at a certain time
@@ -292,9 +284,13 @@ Optimized for programmers searching source codel; ignores .git folder, minified 
 Many ack flags are similar or the same as grep; most programmers using git should use [ag](https://github.com/ggreer/the_silver_searcher) which is faster than ack and has a few other benefits (respecting .gitignore, etc.)  
 
 ```bash
-ack substring # search for substring
-ack -cl # list filenames with matches
-ack -ch # list number of matches
+ack 'substring' # search for substring
+ack -w 'substring' # whole word search
+ack -l 'substring' # list filenames with matching content
+ack -C 3 'substring' # show context around match
+
+ack -cl # list filenames with matches, along with incidence
+ack -ch # list number of total matches
 ack --python # restrict search to a language
 ack -f . # list all files that will be searched
 ack -g substring # look for files in subdirectories that has substring in its path
@@ -345,22 +341,26 @@ kill %2 # kill job number 2
 Create a single file from multiple files and/or subdirectories (old tape archive)
 ```bash
 tar -cvf . ~/abc.tar # compress, verbose, compress to filename provided
+tar -tvf # get info
 -xvf # extract, verbose, extract filename provided
 -xvzf # extract, verbose, uncompress gzip, extract filename provided
 -cvzf # gzip as well
 -cvjf # bzip2 as well
+-cvJf # xz as well
 ```
 
 #### gzip: Compress
-Bzip2 is better (below), but gzip is commonly used
+xz and bzip2 is slower to compress but often much smaller (below), but gzip is commonly used
 ```bash
+gzip -l abc.gz # info on compressed file (compression ratio)
 -d # decompress
 ```
 
 #### bzip2: 
 Similar options to gzip (though not exact)
 ```bash
-zip -r archive_name.zip folder_to_compress
+bzip2 abc.tar out.gzip
+bzip2 -r archive_name.zip folder_to_compress
 ```
 
 #### zip – Cross platform zip (Mac OS X) 
@@ -406,13 +406,28 @@ find path/to/dir | xargs wc -l # count the number of lines of all files in a dir
 ```
 
 #### ssh: Open SSH client
-set the ~/.ssh/config file to make life easier for sshing into commonly used servers
+set the ~/.ssh/config file to make life easier on client side for sshing into commonly used servers  
+~/.ssh/authorized_keys  # list of public keys that are authorized to login to this server  
 
 ```bash
 ssh -i ~/.ec2/abc.pem hello@100.1.24.33 # ssh into server with public key at path
+ssh -i ~/.ec2/abc.pem hello@100.1.24.33 "command_to_run" # ssh into server with public key at path, run command_to_run, and disconnect
+ssh -p 1000 remote_host # ssh to port 1000 on remote
 ssh hostname "cd abc && ls -lah" # ssh then run command
 ssh -D 1234 hostname # use hostname as a SOCKS proxy on localhost:1234
+ssh -f -N -R 8888:example.com:80 username@remote_host
+
+# Can suspend a session by pressing 1. Enter 2. ~ 3. CTRL-Z
+# Tilde (~) lets you send commands to SSH
+
+# Setup
+ssh-keygen # to generate private and public key ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
+ssh-keygen -p # change or remove passphrase
+ssh-copy-id username@remote_host # automated way of copying public key to remote server's authorized_keys file
+sudo nano /etc/ssh/sshd_config # Uncomment and ensure 'PasswordAuthentication no' and 'PermitRootLogin no' to prevent login by password and root login, can also change default port to reduce risk of intrusion; will need to restart afterward: sudo service ssh restart
 ```
+
+#### sftp: Secure FTP
 
 #### mv: Move file from src to dest
 ```bash
@@ -563,15 +578,16 @@ curl http://www.example.com/index.html -o abc.html # output to file abc.html
 curl -O http://www.example.com/index.html # output to the remote filename on local, in this case index.html
 
 # Common Options
-curl -v # verbose
 curl -X POST # can use the standard verbs, plus custom ones
 curl -H "Accept: application/json" # set custom headers, can add multiple by using multiple flags
 curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server in body, automatically POST, can also separate by separate -d arguments rather than an &
-
-# Sending data
 curl -d @invoice.pdf -X POST http://devnull-as-a-service.com/dev/null # post a file
+curl -i http://www.example.com # show response body AND headers 
+
+# Other
+curl -v # verbose
 curl -d '{"user": {"name": "zaiste"}}' -H "Content-Type: application/json" http://server/
-curl --data-urlencode # 
+curl --data-urlencode
 curl --form upload=@localfilename --form press=OK [URL] |
 
 curl -head # head only
@@ -584,7 +600,7 @@ curl ifconfig.me/port # get port
 ```bash
 wget http://www.example.com/xyz.html # get file and save as xyz.html
 wget -O abc.html http://www.example.com/def.html # output to file
-wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted download
+wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted download, typically make this an alias for wget -c
 wget -i download-file-list.txt # download entire file list, file list has URLs listed one per line
 wget --mirror -p --convert-links -P ./localdirectory http://www.example.com/index.html # convert links converts links to local, -p downloads all files to view, -P saves to local directory
 wget -w 2 -r -np -k -p http://www.stanford.edu/class/cs106b # recursively download an entire site, waiting 2 seconds between hits (courtesy Stanford Startup Engineering class)
@@ -627,7 +643,7 @@ jq '.[0] | {message: .commit.message, name: .commit.committer.name}' < abc.json 
 Command | Description
 :----: | ----
 pwd | print working directory
-touch abc.txt | create empty file
+touch abc.txt def.txt | create empty file or files
 date | date and time
 date +%s / date -r 1231006505 | to/from unix epoch time
 cal / cal 3 1973 | calendar of current month
@@ -642,7 +658,6 @@ units | convert between units
 hostname | displays the system name
 mount /dev/sdb1 /u01 | mount device to directory
 read var1 | set variable to stdin
-ping www.google.com | see if a site is up and you can connect to it
 yes | print y forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
 script | record everything typed in a text file
 file abc.txt | get info on file type
@@ -713,9 +728,15 @@ pgrep -f abc.rb # Find the pids of processes with 'abc.rb' as an argument, like 
 ```
 
 #### awk
+[General Tutorial] (https://www.digitalocean.com/community/tutorials/how-to-use-the-awk-language-to-manipulate-text-in-linux)
 [awk one liners](http://www.pement.org/awk/awk1line.txt)
 
-TODO
+```bash
+awk '/search_pattern/ { action_to_take_on_matches; another_action; }' file_to_parse # standard structure, print is default action if nothing specified
+awk '/search_pattern/ { print $1; } /etc/fstab # print column 1
+
+
+```
 
 #### tr: Translate Characters (replace a character with another)
 ```bash
@@ -748,8 +769,16 @@ Primarily used for substitution (leading 's' below)
 ```bash
 sed 's/day/night' abc.txt def.txt # replace first 'day' with 'night' per line, can use with multiple files
 sed -e 's/day/night' -e 's/something/else/g' abc.txt # -e lets you specify separate commands
+sed 's/day/night/;s/something/else/g' abc.txt # same as above
 sed -i # inplace editing, replaces file
 sed -i.bak # inplace editing, replaces file, and saves backup file with given extension
+
+sed 'G' abc.txt # enters a blank line after each line
+sed '=' abc.txt # add line number before each line
+
+sed '/hello/s/world/& !/' hello.txt # replace only on lines that match a certain pattern
+sed '/^$/d' file.txt # delete all empty lines
+
 sed '5s/day/night' abc.txt # substitute only on line 5
 sed '5!s/day/night' abc.txt # everywhere other than line 5
 
@@ -858,6 +887,40 @@ openssl dgst -ripemd160
 openssl s_client -connect www.domain.com:443 -showcerts # get certificate from a certain server
 ```
 
+#### ping: Send request to network host
+```bash
+ping google.com | see if a site is up and you can connect to it, resolves domain to IP; does continuously till you terminate
+ping -c 3 google.com | ping 3 times
+```
+
+#### Trace Route traceroute (Print route packets take to host) and mtr (Network Diagnostic)
+mtr combines ping and traceroute, main advantage is continous updating
+```bash
+traceroute google.com
+traceroute -m 255 google.com # up to 255 hops away, default is 30
+traceroute google.com 70 # change packet size to 70 bytes
+
+mtr google.com
+mtr --report google.com # sends 10 packets to each hop
+```
+
+#### host: DNS Lookup Utility
+Get IP or other servers of domain
+```bash
+host -t mx google.com # MX servers
+host -a google.com # all servers
+host -v google.com # verbose mode
+```
+
+#### dig: DNS Lookup Utility
+Testing for DNS info associated with a domain
+```bash
+dig example.com # defaults to A records
+dig example.com MX # mail records
+dig example.com ANY # all records
+dig your_domain_name.com +short # IP taht domain points to only
+```
+
 [Start of More Advanced?]
 #### tcpdump: Dump traffic on a network
 (Note: This needs to be culled)
@@ -879,33 +942,61 @@ tcpdump portrange 21-23
 -r capturefile # read from file
 ```
 
-#### nmap: Host Discovery and Port Scanning
-(Note: This needs to be culled)
+#### netstat: Show network status
+Basics:  
+Ports 1 - 65,535
+  - 1 - 1024 associated wit Linux, must typically have root priveleges to assign to this range
+  - 1024 - 49151 are registered ports, can be reserved by IANA
+  - 49152 and 65535 are for private use
+
+**Standard ports**  
+Port Number | Service
+:---:|:---:
+20 | FTP data
+21 | FTP control port
+22 | SSH
+23 | Telnet, insecure (don't use, use 22 instead)
+25 | SMTP
+80 | HTTP
+110 | POP3
+143 | IMAP
+443 | HTTPS
+587 | SMTP, message submission
+
 ```bash
-/ uses SYN by default, Discovery mode of host (port 80 is used), then Scan
+netstat # print list of open sockets
+sudo netstat -plunt # show port and listening socket associated with the service
+netstat -a # list all ports
+netstat -at # all TCP
+netstat -au # all UDP
+netstat -a # show statistics
+```
+
+#### nmap: Host Discovery and Port Scanning
+
+```bash
+# uses SYN by default, Discovery mode of host (port 80 is used), then Scan
+# need to use with sudo
 nmap localhost
 nmap 192.16.10.0
+nmap scanme.nmap.org # test server
+
+nmap -O hostname # tells you Operating System information
+nmap -PN remote_host # assume host is up
+nmap -p 1000 remote_host # scan a specific port
 nmap -p1-10000 # scan range of ports, default is 1663 ports
 nmap -p22,23,10000-15000 192.168.10.0/24 # scan selected ports
-nmap -sU -pT:21,22,23,U:53,137 192.168.10.0/24 # for UDP
+nmap -sP abc.com # ping scan, sends ICMP echo and TCP ACK
+nmap -sT remote_host # scan for TCP connection
+nmap -n -PN -sT -sU -p- remote_host # scan for every TCP and UDP open port
+nmap -sS remote_host # SYN scan
+
 nmap -sF # FIN scan
 nmap -sX # XMAS scan, Christmas Tree packet has all options on, used primarily in scans and DOS
 nmap -sA # ACK scan
 nmap -sN # NULL scan
-nmap -sP abc.com # ping scan, sends ICMP echo and TCP ACK
-nmap -p10000 -sV host # gives version information of service on port
-nmap -P0 hostname # just scan, don't worry about discovery
-nmap -O hostname # tells you Operating System information
-nmap -oA # output to all formats below
 nmap -oN # .nmap output, human readable
-nmap -oG # .gnmap, grepable
-nmap -oX # .xml, XML
-nmap -resume # can resume when a crash
-nmap -vv
-/ can vary scan speed
--T Sneaky # 15 seconds, serial
--T Polite # 4 seconds, serial
--T # Aggressive, parallel
+nmap -6 # scans ipv6
 ```
 
 ## [Command Cocktails](#command_cocktails)
@@ -978,6 +1069,7 @@ sudo make install
 ```
 
 #### nice: execute a utility with an altered scheduling priority
+-19/-20 are highest priority and 19/20 are lowest priority (lowest priority take minimal resources)
 ```bash
 nice -12 myproc # starts  process "myproc" setting the "nice" value to 12
 renice 17 -p 1134 # change the priority of job with pid 1134 
@@ -1055,6 +1147,7 @@ du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not
 ```bash
 df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
 df -lh # local file systems onlt
+df -h --total # add total column, non-BSD
 ```
 
 #### passwd: Change password
@@ -1071,16 +1164,24 @@ shutdown -h +10
 ```
 
 #### top: Display and update sorted information about processes
-Linux and Mac OS are very different
+Linux and BSD flavors of top are very different
 use htop, not top when possible  
 ```bash
 top -U johndoe # see processes owned by johndoe
 # use 'q' to quit, and 'k' (on Linux only) to pick a PID to kill, can do '?' to see which keyboard options are available
+
+htop
+# Keys
+# M - sort processes by memory usage
+# P - sort processes by processor usage
+# k - kill current tagged process
+# /substring - Search processes for substring
 ```
 
 #### ps: Process status
 ```bash
 ps aux | grep process # standard usage, display info about all users processes; often used in conjunction with kill
+ps axjf # tree view
 ps -l # long option
 ps -u abc,def # users
 ps -f -p 123 # find by process id
@@ -1098,10 +1199,12 @@ ps aux --sort pmem # sort by column
 # 15 - SIGTERM - Termination Signal, default signal sent by kill
 # 9 - SIGKILL - Kill Signal, immediate kill by the kernel
 
-kill 2592 # kill PID 2592, send TERM signal
+kill 2592 # kill PID 2592, send TERM signal when not specified
 kill -9 2592 # non-ignorable kill, SIGKILL
 kill %1 # kill job number 1 from 'jobs' list
 kill -SIGTERM 2931 # can use any of the signals above
+pkill -9 ping # same as kill -9 `pgrep ping`
+kill -l # list all signals
 ```
 
 #### killall: Killall
@@ -1121,7 +1224,7 @@ which command | determine which command path is used to run command, used when y
 whereis command | looks through list of standard directories independent of serch path, displays all files found (not just first)
 env | print system environment variables
 export PATH=$HOME/bin:$PATH | add bin path to the existing path
-groups | Outputs the user groups of which your account belongs to.
+groups | Outputs the groups to which your account belongs to.
 adduser johndoe | need super user privileges
 passwd -a demo sudo | 
 service ssh restart | restart service
@@ -1132,16 +1235,21 @@ users | list of users who are currently logged in
 finger username | info on user, including logins
 last, last username | list of login history for a user or all users
 uptime | time system has been up
-free, free -mt | free space (amount of RAM, swap), not available on Mac; latter option uses space in megabytes
+free, free -mt | free space (amount of RAM, swap), not available on BSD; latter option uses space in megabytes with total
+vmstat / vmstat -S M | info on memory, swap etc / outputs in megabytes 
 man hier | get an explanation of the system directory structure
-host | get ip of domain
 uname -a | get information about system
 echo $0 | determine which shell (e.g., bash)
 nohup command | run command, ignoring any hangup signals (used when starting a process on a server which you want to keep running when you logout)
 hash, hash -r | table of where commands can be found based on usage, -r empties table when you may have changed the path
+cat /etc/passwd | list of all users
+cat /etc/group | list of all groups on system
+cat /etc/shadow | list of all hashed passwords
 
 ## [vim basics](#vim_basics)
 DISCLAIMER: This is just to help someone get the basics of Vim, not for regular users
+
+[Vim tutorial](https://www.digitalocean.com/community/tutorials/installing-and-using-the-vim-text-editor-on-a-cloud-server)
 
 #### General Notes
 Modes: Normal mode (ESC) vs insert mode (i)  vs visual mode (v)
@@ -1152,58 +1260,6 @@ Command | Description
 vimtutor | you can type this at the command line to get a Vim textual tutorial
 vim filename.txt +25 | open file and go to line 25
 vim filename.txt +/abc | open file and go to first occurrence of substring
-
-#### Vim Commands
-Key Sequence | Description
-:------: | ------
-ESC | normal mode
-i | insert / insert mode
-I | insert text at beginning of the cursor line
-v | visual mode
-$ | end of line
-0 | start of line
-x / X | delete character to under/left(backspace) of cursor
-w | one word forward
-a | append
-A | append to end of line
-O | Insert line above current line
-o | Insert line after current line
-2e | 2 words forward, at end of line
-b | before
-10j | down ten lines
-10k | up ten lines
-dw / p | delete and cut word / paste (use 'y' to copy instead of delete)
-d$ / p | delete and cut to end of line / paste
-u | undo last
-U | Undo all on line
-Ctrl-R | undo the undos
-dd/p | cut and paste
-/ | search for search term going forward
-? | search for search term going backward
-n | forward when looking for a search term
-N | backward when looking for a search term
-r then character | replace character
-ce | replace word
-gg | top of file
-G | bottom of file
-Ctrl-G | Displays location in file and file status
-25G | Goto line
-% | go to matching parentheses, bracket, curly brace
-XiTEXT (then ESC twice) | insert TEXT X times
-* / # | next/previous of the word that you are at
-fCHARACTER | search for character on line, can add number in front for Xth occurence, F is backwards
-. | repeat last command
-J | join line to next line
-
-^F, ^B | page up and page down
-:s/old/new/g | substitute for all 'old' on a line
-:%s/old/new/g | substitute for all 'old' in the file
-:w | save
-:w filename.txt | save to file
-:e file.txt | open file
-Ctrl-D | see completions when typing a colon
-:wq | save and quit
-:q! | quit without saving
 
 ## [Setup](#setup)
 
@@ -1217,7 +1273,7 @@ Use the following command to see your 25 most used commands (helps you determine
  history|awk '{print $2, $3}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -n
 ```
 
-Basic aliases are below, see [Github dotfiles](http://dotfiles.github.io) + the packages for zsh (like 'oh my zsh' and 'prezto') for many default aliases  
+Basic aliases are below, see [Github dotfiles](http://dotfiles.github.io) + the packages for zsh (like [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) and [prezto](https://github.com/sorin-ionescu/prezto)) for many default aliases  
 
 ```bash
 alias h='history | tail'
