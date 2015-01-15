@@ -201,10 +201,10 @@ used to print files with pagination, can use standard keyboard shortcuts like pa
 
 ```bash
 less filename.txt # print file with pagination
-less filename.txt filename2.txt # open multiple files
+less filename.txt filename2.txt # open multiple files, can use :n and :p to move back and forth
 less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to have search terms highlighted
 less -r # retain color codes, e.g., use with color options on the command you are piping to less
-less -S # chop lines that go past screen end (rather than wrapping)l
+less -S # chop lines that go past screen end (rather than wrapping)
 ```
 
 #### head: Display the first part of a file
@@ -252,7 +252,7 @@ ln -sf # if target file link exists, unlink so that the new link may occur
 ```
 
 #### grep: File Pattern Searcher
-For most programmers, it is preferable to use [ag](https://github.com/ggreer/the_silver_searcher) or [ack](http://beyondgrep.com/)  
+For most programming needs, it is preferable to use [ag](https://github.com/ggreer/the_silver_searcher) or [ack](http://beyondgrep.com/)  
 
 ```bash
 grep 'substring' --color file1.txt file2.txt # search for substring can be used with multiple files
@@ -1245,73 +1245,3 @@ hash, hash -r | table of where commands can be found based on usage, -r empties 
 cat /etc/passwd | list of all users
 cat /etc/group | list of all groups on system
 cat /etc/shadow | list of all hashed passwords
-
-## [vim basics](#vim_basics)
-DISCLAIMER: This is just to help someone get the basics of Vim, not for regular users
-
-[Vim tutorial](https://www.digitalocean.com/community/tutorials/installing-and-using-the-vim-text-editor-on-a-cloud-server)
-
-#### General Notes
-Modes: Normal mode (ESC) vs insert mode (i)  vs visual mode (v)
-
-#### CLI Commands
-Command | Description
-:------: | -----
-vimtutor | you can type this at the command line to get a Vim textual tutorial
-vim filename.txt +25 | open file and go to line 25
-vim filename.txt +/abc | open file and go to first occurrence of substring
-
-## [Setup](#setup)
-
-#### Commonly Used Aliases
-Use the following command to see your 25 most used commands (helps you determine which aliases to setup)
-```bash
-# this command finds the top 25 base commands (excluding arguments)
- history|awk '{print $2}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -r | head -25
-
- # this includes arguments
- history|awk '{print $2, $3}'|awk 'BEGIN {FS="|"} {print $1}'|sort|uniq -c|sort -n
-```
-
-Basic aliases are below, see [Github dotfiles](http://dotfiles.github.io) + the packages for zsh (like [oh-my-zsh](https://github.com/robbyrussell/oh-my-zsh) and [prezto](https://github.com/sorin-ionescu/prezto)) for many default aliases  
-
-```bash
-alias h='history | tail'
-alias hist='history  | grep'
-alias webserver="python -m SimpleHTTPServer"
-
-alias ..="cd .."
-alias ...="cd ../.."
-alias cd6="cd ../../../../../.."
-alias cd5="cd ../../../../.."
-alias cd4="cd ../../../.."
-alias cd3="cd ../../.."
-alias cd2="cd ../.."
-
-# these are courtesy of Stanford's Startup Engineering class
-alias ll="ls -alrtF --color"
-alias la="ls -A"
-alias l="ls -CF"
-alias cls='clear && ls'
-alias dir='ls --color=auto --format=vertical'
-alias vdir='ls --color=auto --format=long'
-alias m='less'
-alias md='mkdir'
-alias cl='clear'
-alias du='du -ch --max-depth=1'
-alias treeacl='tree -A -C -L 2'
-
-alias em='emacs -nw'     # No X11 windows
-alias eqq='emacs -nw -Q' # No config and no X11
-
-export GREP_OPTIONS='--color=auto'
-export GREP_COLOR='1;31' # green for matches
-
-# Ensures cross-platform sorting behavior of GNU sort.
-# http://www.gnu.org/software/coreutils/faq/coreutils-faq.html#Sort-does-not-sort-in-normal-order_0021
-unset LANG
-export LC_ALL=POSIX
-
-alias pbcopy='xclip -selection clipboard' # on Linux to replicate the Mac functionality of command line clipboard
-alias pbpaste='xclip -selection clipboard -o' # on Linux to replicate the Mac functionality of command line clipboard
-```
