@@ -82,7 +82,7 @@ history | grep command # list out previous calls with command, then do !123 to r
 !105 # run command number 105 from history
 !-2: Run command 2 before the current command in history
 
-^abc^def # replace first argument with second argument in previous command (only for first occurrence)
+^abc^def^ # replace first argument with second argument in previous command (only for first occurrence)
 !!:gs/foo/bar # run last command replacing all foo with bar
 
 !:$ # last argument of previous command (also !$)
@@ -98,6 +98,14 @@ cd abc && ls # && means run second command only if first succeeds, compare to ||
 \gpom # ignore the alias
  ls # leading space means don’t store in history
 ```
+
+#### Other basics
+Command | Description
+:-----: | -----
+which command | determine which command path is used to run command, used when you may have multiple binaries (looks through directories in your search path in order, and lists the first found)
+whereis command | looks through list of standard directories independent of search path, displays all files found (not just first)
+env | print system environment variables
+export PATH=$HOME/bin:$PATH | add bin path to the existing path
 
 ## [Basics](#basics)
 
@@ -231,7 +239,7 @@ echo "line1\nline2" >> .bash_profile # append string to end of .bash_profile, qu
 echo "line1\nline2" > output.txt # quick way to create file with text, compare to touch and then nano/vim
 echo -n "Hello" # this line is not followed by a newline as is standard
 echo -e "Hello\nWorld" # interpret backslash escape sequences like newline ('\n') and tab ('\t')
-echo -e "\nalias ..="cd.."' >> .bash_profile # quickly append text to the end of a file
+echo -e "\nalias ..='cd..'" >> .bash_profile # quickly append text to the end of a file
 
 # multiline
 echo "This is the first line
@@ -256,33 +264,47 @@ For most programming needs, it is preferable to use [ag](https://github.com/ggre
 
 ```bash
 grep 'substring' --color file1.txt file2.txt # search for substring can be used with multiple files
-grep 'substring' -riI --color . # recursive, ignore case, ignore binary file matches, highlight match in color, a common usage
+grep 'substring' -riI --color . # recursive (-R is the same), ignore case, ignore binary file matches, highlight match in color, a common usage
+
+# The basics (substring and path follow the flag)
 grep -i # case insensitive
 grep -v # invert
 grep -c # incidence count
 grep -x # exact match
-grep -A # 3 lines after
-grep -B # 3 lines before
-grep -C # 3 lines before and after
 grep -n # show line numbers
 grep -w # search for whole words
 grep -l # list filenames with matching content
-grep -E # interpret pattern as a regular expression, can also use egrep
 grep -I # ignore binary file matches
-# TODO: Add some popular regexes for grep at the command line
+grep -m n # show only n number of matches in each file
+
+# Show context
+grep -A # 3 lines after
+grep -B # 3 lines before
+grep -C # 3 lines before and after
+
+# include exclude files and/or folders
+grep --include="*.js"
+grep --exclude="*.js"
+grep --exclude-dir="./tmp"
+grep --include-dir="./directory_to_scan"
+
+# Regular expressions
+grep -E # interpret pattern as a regular expression, can also use egrep
+grep -E -o # print only matching part of the line (-o option is used often with -E option)
 
 # Popular usages
 grep -iIrn computesSum * # Case insensitive search through all of the files recusively starting from my current directory for the string "computesSum" but does not search binary files.  When a match is found, print the line number it was found on
 grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' input.txt > output.txt # grep for IP address
-grep -R --include="*.py" "pattern" /path/to/dir # grep recursively through files of a certain type, such as .py files
+grep -r --include="*.py" "pattern" /path/to/dir # grep recursively through files of a certain type, such as .py files
 grep -m 1 "needle" *.txt # show only the first match in each file
 ```
 
-#### ack: grep-like tool
+#### ack (and ag): grep-like tool
 Optimized for programmers searching source codel; ignores .git folder, minified files, etc.  
 
 Many ack flags are similar or the same as grep; most programmers using git should use [ag](https://github.com/ggreer/the_silver_searcher) which is faster than ack and has a few other benefits (respecting .gitignore, etc.)  
 
+**ack**
 ```bash
 ack 'substring' # search for substring
 ack -w 'substring' # whole word search
@@ -294,6 +316,23 @@ ack -ch # list number of total matches
 ack --python # restrict search to a language
 ack -f . # list all files that will be searched
 ack -g substring # look for files in subdirectories that has substring in its path
+```
+  
+**ag**
+```bash
+# defaults to ignoring binary files plus those in .gitignore, .hgignore, .agignore and svn:ignore; default folder depth is 25
+
+ag -i # ignore case
+
+# File types
+ag --list-file-types # list file types that can be specified
+ag --html # search only html files, with extensions as listed in previous command
+
+# restrict to files based on regex
+ag -g pattern # print filenames matching pattern
+ag -G pattern substring # only searches filenames matching pattern
+
+# caveat for logs/piping: defaults to printing only the first 10k matches per file, and 2k characters per line
 ```
 
 #### find: Walk a file hierarchy (search for files etc. matching certain criteria, can also be used with xargs/parallel )
@@ -337,6 +376,13 @@ fg %?ace # search for substring
 kill %2 # kill job number 2
 ```
 
+#### nohup: No hangup
+Keep command running when logged out
+
+```bash
+nohup command | run command, ignoring any hangup signals (used when starting a process on a server which you want to keep running when you logout)
+```
+
 #### tar: Archive file or path
 Create a single file from multiple files and/or subdirectories (old tape archive)
 ```bash
@@ -344,23 +390,30 @@ tar -cvf . ~/abc.tar # compress, verbose, compress to filename provided
 tar -tvf # get info
 -xvf # extract, verbose, extract filename provided
 -xvzf # extract, verbose, uncompress gzip, extract filename provided
--cvzf # gzip as well
--cvjf # bzip2 as well
--cvJf # xz as well
+-cvzf # gzip as well as archiving
+-cvjf # bzip2 as well as archiving
+-cvJf # xz as well as archiving
 ```
 
 #### gzip: Compress
-xz and bzip2 is slower to compress but often much smaller (below), but gzip is commonly used
+xz and bzip2 are slower to compress but often much smaller (below), but gzip is still commonly used
 ```bash
 gzip -l abc.gz # info on compressed file (compression ratio)
 -d # decompress
 ```
 
-#### bzip2: 
-Similar options to gzip (though not exact)
+#### bzip2 and xz
+**bzip**
+Similar options to gzip (though not exact). xz is slower and requires more memory, but leads to smaller output files.
+
 ```bash
-bzip2 abc.tar out.gzip
-bzip2 -r archive_name.zip folder_to_compress
+bzip2 abc.tar out.bzip # compress
+bzip2 -d out.bzip # decompress
+bzip2 -r archive_name.bzip folder_to_compress
+
+xz abc.tar out.xz # compress
+xz -d out.xz # decompress
+xz -l out.xz # list
 ```
 
 #### zip – Cross platform zip (Mac OS X) 
@@ -459,13 +512,12 @@ first lines in output refer to source lines, then a letter (a = add/+, c = chang
 
 -b # ignore things that change the whitespace only
 -w # ignore all space
--B # ignore blank lines
 -i # ignore case
 
 -a # treat file as text
 -C 3 # output num of copied context, 3 lines is default
--U # output num of unified context, 3 lines is default
 -q # show only that the files differ, useful for scripts
+
 diff -r DIRECTORY1 DIRECTORY2 # show the difference between two directories
 diff <(sort file1) <(sort file2) # show the difference between two files
 ```
@@ -502,7 +554,7 @@ Note:
 * CTRL-b is the prefix key required before pressing a key (can be changed - e.g., for ex-users of screen); many commands allow you to use this as well as an actual command
 * May consider remapping CAPSLOCK to CTRL to make life easier
 
-** The Basics **
+**The Basics**
 ```bash
 # ---------------------------------------------
 # SESSIONS
@@ -525,7 +577,7 @@ Put the prefix key before keys listed below (default: CTRL-B)
 
 | Command<br/>(Key) | Session | Window | Pane |
 |:------:|:-------:|:-------:|:-----:|
-|Create|:new -s SESSION_NAME <br />|New: c <br /> *Pane to Window:* !|*Vertical:* " <br />*Horizontal:* %|
+|Create|:new -s SESSION_NAME <br />|New: c <br /> *Pane to Window:* !| *Horizontal Split:* % <br />*Vertical Split:* "|
 |Rename|$|,||
 |List|`tmux ls`<br />s SESSION_NAME|w ||
 |Search||f SEARCH_TERM||
@@ -598,14 +650,15 @@ curl ifconfig.me/port # get port
 
 #### wget: Network Downloader
 ```bash
-wget http://www.example.com/xyz.html # get file and save as xyz.html
+# Basics
 wget -O abc.html http://www.example.com/def.html # output to file
-wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted download, typically make this an alias for wget -c
-wget -i download-file-list.txt # download entire file list, file list has URLs listed one per line
+wget -i tmp.txt # download a list of URLs, file list has URLs listed one per line
+wget -b # background download, with log file at: /wget/log.txt
+wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted download, typically make this an alias for wget -c so it is automatic
+
 wget --mirror -p --convert-links -P ./localdirectory http://www.example.com/index.html # convert links converts links to local, -p downloads all files to view, -P saves to local directory
 wget -w 2 -r -np -k -p http://www.stanford.edu/class/cs106b # recursively download an entire site, waiting 2 seconds between hits (courtesy Stanford Startup Engineering class)
 wget --random-wait -r -p -e robots=off -U mozilla http://www.example.com # Download an entire website
-
 ```
 
 #### cut: Cut out selected portions of each line of a file
@@ -734,8 +787,6 @@ pgrep -f abc.rb # Find the pids of processes with 'abc.rb' as an argument, like 
 ```bash
 awk '/search_pattern/ { action_to_take_on_matches; another_action; }' file_to_parse # standard structure, print is default action if nothing specified
 awk '/search_pattern/ { print $1; } /etc/fstab # print column 1
-
-
 ```
 
 #### tr: Translate Characters (replace a character with another)
@@ -798,6 +849,15 @@ seq 1 3 10 # go from 1 to 10 in steps of 3
 seq -s 'abc' 5 # prepend number onto string
 ```
 
+#### jot: Generate Data
+```bash
+jot NUM LOW HIGH STEP
+jot -b hello # repeat word
+jot -w hello # use as start
+jot -r # random
+jot -s’:’ # print data with string as separator (not newline)
+```
+
 #### mktemp: Create Temp File
 ```bash
 mktemp -t abc # use abc as template
@@ -812,15 +872,6 @@ watch -d # highlight differences between successive updates
 watch -e # exit if the return value is non-zero
 
 watch -d ls -l # watch contents of a directory change
-```
-
-#### jot: Generate Data
-```bash
-jot NUM LOW HIGH STEP
-jot -b hello # repeat word
-jot -w hello # use as start
-jot -r # random
-jot -s’:’ # print data with string as separator (not newline)
 ```
 
 #### lsof: Lists open files for active processes, including pipes and network sockets
@@ -889,17 +940,17 @@ openssl s_client -connect www.domain.com:443 -showcerts # get certificate from a
 
 #### ping: Send request to network host
 ```bash
-ping google.com | see if a site is up and you can connect to it, resolves domain to IP; does continuously till you terminate
-ping -c 3 google.com | ping 3 times
+ping google.com # see if a site is up and you can connect to it, resolves domain to IP; does continuously till you terminate
+ping -c 3 google.com # ping 3 times
 ```
 
-#### Trace Route traceroute (Print route packets take to host) and mtr (Network Diagnostic)
-mtr combines ping and traceroute, main advantage is continous updating
+#### traceroute (Print route packets take to host) and mtr (Network Diagnostic)
 ```bash
 traceroute google.com
 traceroute -m 255 google.com # up to 255 hops away, default is 30
 traceroute google.com 70 # change packet size to 70 bytes
 
+# mtr combines ping and traceroute, main advantage is continous updating
 mtr google.com
 mtr --report google.com # sends 10 packets to each hop
 ```
@@ -909,7 +960,6 @@ Get IP or other servers of domain
 ```bash
 host -t mx google.com # MX servers
 host -a google.com # all servers
-host -v google.com # verbose mode
 ```
 
 #### dig: DNS Lookup Utility
@@ -918,7 +968,7 @@ Testing for DNS info associated with a domain
 dig example.com # defaults to A records
 dig example.com MX # mail records
 dig example.com ANY # all records
-dig your_domain_name.com +short # IP taht domain points to only
+dig your_domain_name.com +short # IP that domain points to only
 ```
 
 [Start of More Advanced?]
@@ -945,7 +995,7 @@ tcpdump portrange 21-23
 #### netstat: Show network status
 Basics:  
 Ports 1 - 65,535
-  - 1 - 1024 associated wit Linux, must typically have root priveleges to assign to this range
+  - 1 - 1024 associated with Linux, must typically have root priveleges to assign to this range
   - 1024 - 49151 are registered ports, can be reserved by IANA
   - 49152 and 65535 are for private use
 
@@ -1013,93 +1063,7 @@ curl -sS https://getcomposer.org/installer | php # pull down a php file and run 
 ## [Sysadmin Basics](#sysadmin_basics)
 This section is for things related to user management, process management, filesystem, or the general system.
 
-#### sudo
-```bash
-sudo command # become a root temporarily (to execute a command), prompts for password when first typed and then won't ask for password again for a 5 min window during that terminal session
-sudo !! # run previous command as sudo
-
-```
-
-#### Package management - apt-get, brew, and install from source
-
-```bash
-sudo apt-get upgrade #upgrade packages
-```
-
-```bash
-apt-get -y update && apt-get upgrade && reboot #update, upgrade all packages, and reboot
-```
-
-```bash
-wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -;
-sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'; #add a repository
-```
-
-```bash
-sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
-sudo apt-get remove g++ # remove package
-sudo apt-get update # update list of packages available
-```
-
-```bash
-# apt-get is the main package manger for Ubuntu Linux
-sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
-sudo apt-get remove g++ # remove package
-sudo apt-get update # update list of packages available
-```
-
-```bash 
-# Homebrew is a popular package manager for Mac, can also use port
-brew install formula # install a formula, you should not have to use sudo with brew
-brew remove formula
-brew update formula
-brew search formula
-```
-
-```bash
-# can also install from source, this is the preferred way so you are not clobbering an existing package, and so it is easy to delete if needed
-./configure --prefix=$HOME/my-sqlite-dir # pick whatever name you want
-make
-make install
-
-# else, you can do this
-./configure
-make
-sudo make install
-```
-
-#### nice: execute a utility with an altered scheduling priority
--19/-20 are highest priority and 19/20 are lowest priority (lowest priority take minimal resources)
-```bash
-nice -12 myproc # starts  process "myproc" setting the "nice" value to 12
-renice 17 -p 1134 # change the priority of job with pid 1134 
-```
-
-#### alias: Create a command alias
-```bash
-alias m='less' # create alias m to call less command
-```
-
-#### export: export shell variables
-```bash
-export EDITOR=/usr/bin/vim # set a new EDITOR variable:
-```
-
-```bash
-VAR=value # alternative syntax
-export VAR
-```
-
-Add export statements to ~/.bash_profile or ~/.profile or /etc/profile file to export variables permanently
-```bash
-$ vi ~/.bash_profile
-```
-
-#### source: executes the content of the file passed as argument, in the current shell. It has a synonym in '.' (period)
-```bash
-source ~/.aliases # executes ~/.aliases script 
-```
-
+### Users, Groups and Permissions
 #### chown: Change ownership (chown)
 ```bash
 chown bob file.txt
@@ -1133,35 +1097,27 @@ su - johndoe -c 'ls' # run command as user
 su - johndoe # switch to user
 ```
 
-#### du: Disk Usage
-```bash
-du * | sort -r # display usage of each file and subdirectory in current directory starting with largest, can use with head to get the largest items at top
-du -sh * # disk usage of items in directory, but does not traverse (s = summarize) subdirectories
-du -shc * # same as above, but adds a total at the end
-du -h --max-depth=1 # List human readable size of all sub folders from current location
-
-du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
-```
-
-#### df: Disk Free
-```bash
-df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
-df -lh # local file systems onlt
-df -h --total # add total column, non-BSD
-```
-
 #### passwd: Change password
 ```bash
 passwd # change password
 passwd -d johndoe # disable password
+passwd -a demo sudo # 
 ```
 
-#### shutdown: Shutdown System
-```
-shutdown -r now
-shutdown now
-shutdown -h +10
-```
+#### Other commands
+Command | Description
+:-----: | -----
+whoami | Prints your username
+who | list users on the system
+w | users on system, show who is logged in and what they're doing (more info than who)
+users | list of users who are currently logged in
+finger username | info on user, including logins
+last, last username | list of login history for a user or all users
+groups | Outputs the groups to which your account belongs to.
+adduser johndoe | need super user privileges
+  
+
+### Processes and Jobs  
 
 #### top: Display and update sorted information about processes
 Linux and BSD flavors of top are very different
@@ -1217,31 +1173,153 @@ killall command # kills all instances of command owned by user (root user kills 
 pkill -f httpd # kills all instances of httpd dameon owned by user
 ```
 
+#### vmstat
+```bash
+vmstat # info on memory, swap etc
+vmstat -S M # outputs in megabytes 
+```
+
+#### nice: execute a utility with an altered scheduling priority
+-19/-20 are highest priority and 19/20 are lowest priority (lowest priority take minimal resources)
+```bash
+nice -n 12 myproc # starts  process "myproc" setting the "nice" value to 12
+renice 17 -p 1134 # change the priority of job with pid 1134 to 17
+```
+
+### Disk
+
+#### du: Disk Usage
+```bash
+du * | sort -r # display usage of each file and subdirectory in current directory starting with largest, can use with head to get the largest items at top
+du -sh * # disk usage of items in directory, but does not traverse (s = summarize) subdirectories
+du -shc * # same as above, but adds a total at the end
+du -h --max-depth=1 # List human readable size of all sub folders from current location
+
+du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
+```
+
+#### df: Disk Free
+```bash
+df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
+df -lh # local file systems only
+df -h --total # add total column, non-BSD
+```
+
+#### free
+```bash
+free -mt # free space (amount of RAM, swap), not available on BSD; 
+free -mt # latter option uses space in megabytes with total
+```
+
+### Package Management  
+#### sudo
+```bash
+sudo command # become a root temporarily (to execute a command), prompts for password when first typed and then won't ask for password again for a 5 min window during that terminal session
+sudo !! # run previous command as sudo
+```
+
+#### Package management - apt-get, brew, and install from source
+```bash
+sudo apt-get upgrade #upgrade packages
+```
+
+```bash
+apt-get -y update && apt-get upgrade && reboot #update, upgrade all packages, and reboot
+```
+
+```bash
+wget -q -O - http://pkg.jenkins-ci.org/debian/jenkins-ci.org.key | sudo apt-key add -;
+sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources.list.d/jenkins.list'; #add a repository
+```
+
+```bash
+sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
+sudo apt-get remove g++ # remove package
+sudo apt-get update # update list of packages available
+```
+
+```bash
+# apt-get is the main package manger for Ubuntu Linux
+sudo apt-get install -y python-software-properties python g++ make # install all of the following packages without prompting for confirmation
+sudo apt-get remove g++ # remove package
+sudo apt-get update # update list of packages available
+```
+
+```bash 
+# Homebrew is a popular package manager for Mac, can also use port
+brew install formula # install a formula, you should not have to use sudo with brew
+brew remove formula
+brew update formula
+brew search formula
+```
+
+```bash
+# can also install from source, this is the preferred way so you are not clobbering an existing package, and so it is easy to delete if needed
+./configure --prefix=$HOME/my-sqlite-dir # pick whatever name you want
+make
+make install
+
+# else, you can do this
+./configure
+make
+sudo make install
+```
+
+### Hierarchy (Key locations/files to know)
+```bash
+cat /etc/passwd # list of all users
+cat /etc/group # list of all groups on system
+cat /etc/shadow # list of all hashed passwords
+
+# Other key folders
+# /bin - keep basic commands, minimal needed to boot
+# /dev - devices
+# /root - home directory of root user
+# /usr - stores all non-essential programs
+# /etc - main configuration directory
+# /vars - system logs and backups
+
+man hier # get an explanation of the system directory structure
+```
+
+### Other  
+#### alias: Create a command alias
+```bash
+alias m='less' # create alias m to call less command
+```
+
+#### export: export shell variables
+```bash
+export EDITOR=/usr/bin/vim # set a new EDITOR variable:
+```
+
+```bash
+VAR=value # alternative syntax
+export VAR
+```
+
+Add export statements to ~/.bash_profile or ~/.profile or /etc/profile file to export variables permanently
+```bash
+$ vi ~/.bash_profile
+```
+
+#### source: executes the content of the file passed as argument, in the current shell. It has a synonym in '.' (period)
+```bash
+source ~/.aliases # executes ~/.aliases script 
+```
+
+#### shutdown: Shutdown System
+```
+shutdown -r now
+shutdown now
+shutdown -h +10
+```
+
 #### Other commands
 Command | Description
 :-----: | -----
-which command | determine which command path is used to run command, used when you may have multiple binaries (looks through directories in your search path in order, and lists the first found)
-whereis command | looks through list of standard directories independent of serch path, displays all files found (not just first)
-env | print system environment variables
-export PATH=$HOME/bin:$PATH | add bin path to the existing path
-groups | Outputs the groups to which your account belongs to.
-adduser johndoe | need super user privileges
-passwd -a demo sudo | 
 service ssh restart | restart service
-whoami | Prints your username
-who | list users on the system
-w | users on system, show who is logged in and what they're doing (more info than who)
-users | list of users who are currently logged in
-finger username | info on user, including logins
-last, last username | list of login history for a user or all users
 uptime | time system has been up
-free, free -mt | free space (amount of RAM, swap), not available on BSD; latter option uses space in megabytes with total
-vmstat / vmstat -S M | info on memory, swap etc / outputs in megabytes 
-man hier | get an explanation of the system directory structure
 uname -a | get information about system
 echo $0 | determine which shell (e.g., bash)
-nohup command | run command, ignoring any hangup signals (used when starting a process on a server which you want to keep running when you logout)
 hash, hash -r | table of where commands can be found based on usage, -r empties table when you may have changed the path
-cat /etc/passwd | list of all users
-cat /etc/group | list of all groups on system
-cat /etc/shadow | list of all hashed passwords
