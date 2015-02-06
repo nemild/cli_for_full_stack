@@ -17,6 +17,7 @@ A prioritized list of the most important CLI commands for full stack engineers
 
 ## Other Resources
 * [Bro Pages](http://bropages.org/): Lists popular options for many of the most used commands, crowdsourced and upvoted (used to augment several commands below)
+* [tldr pages](https://github.com/tldr-pages/tldr)
 * [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
 * [Sobel's Guide to Linux Command's Editors, and Shell Programming](http://www.amazon.com/Practical-Guide-Commands-Editors-Programming/dp/013308504X/ref%3Dsr_1_1): One of the more popular Linux books, includes examples and many basics (perl, bash programming, python) - fairly distribution agnostic
 * [Digital Ocean Tutorials](https://www.digitalocean.com/community/tutorials/)
@@ -147,6 +148,7 @@ popd +1 # pop a particular directory from the list of directories (without going
 mkdir dirname # base usage
 mkdir -p dirname1/dirname2 # make all nested directories that don’t exit
 rmdir lets you remove an empty directory
+mkdir -p foo/{bar,baz} # create both bar and baz subdirectories
 ```
 
 #### ls: List directory contents
@@ -179,6 +181,7 @@ ls -larthG # same as above plus show hidden, human readable file size, colorize
 #### man: Manual
 ```bash
 man command # shows manual page for command typically using less
+man -k keyword # do a keyword search for manpages containing a search string
 
 # The following are popular commands in man
 Ctrl-B/Ctrl-F # page up and down
@@ -198,10 +201,15 @@ man 2 ls # go to section 2 of ls, search for what each section number means
 cat abc.txt def.txt # can use on multiple files
 cat abc.txt def.txt > new.txt # concatenate multiple files in order into a single file
 cat *.txt # output all files matching *.txt
+
+cat > file.txt # Create file, edit, then CTRL-D to save and exit
+
 cat -n # number lines starting at 1, can also call nl -b a
 cat -b # number non-blank lines, can also call nl -b t
 cat -T # Show tabs in a file
 Note: Don’t pipe a cat ('cat hello | dosomething'), instead 'dosomething < abc.txt'
+
+# backwards cat is tac
 ```
 
 #### less: Print a file with pagination
@@ -226,6 +234,8 @@ head -q *txt *gbk # heads of multiple files w/o delimiters
 #### tail: Display the last part of a file
 ```bash
 # head flags from above apply here
+tails -n +10 file.txt # show last lines of file starting with 10th line
+
 tail -f # don't exit, but keep outputting data as appended (used especially in viewing logs), see the less +F command for a potential replacement
 tail -F # same as -f except if the file is replaced or truncated, follow the new file that is now pointed to by the filename
 tail -f "my_server.log" | grep "my process" # Filter lines containing a match for "my process" from a text stream
@@ -292,6 +302,15 @@ grep --include-dir="./directory_to_scan"
 grep -E # interpret pattern as a regular expression, can also use egrep
 grep -E -o # print only matching part of the line (-o option is used often with -E option)
 
+# For gzipped files
+zgrep –i substring /var/log/syslog.2.gz
+
+# No Regular Expressions (faster grep)
+grep -F # or fgrep
+
+# Getting pattern from a file
+grep -f pattern_file file
+
 # Popular usages
 grep -iIrn computesSum * # Case insensitive search through all of the files recusively starting from my current directory for the string "computesSum" but does not search binary files.  When a match is found, print the line number it was found on
 grep -E -o '(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)' input.txt > output.txt # grep for IP address
@@ -307,6 +326,7 @@ Many ack flags are similar or the same as grep; most programmers using git shoul
 **ack**
 ```bash
 ack 'substring' # search for substring
+ack --ruby 'substring' # find files in a specific language
 ack -w 'substring' # whole word search
 ack -l 'substring' # list filenames with matching content
 ack -C 3 'substring' # show context around match
@@ -323,6 +343,7 @@ ack -g substring # look for files in subdirectories that has substring in its pa
 # defaults to ignoring binary files plus those in .gitignore, .hgignore, .agignore and svn:ignore; default folder depth is 25
 
 ag -i # ignore case
+ag foo -G bar # find 'foo' in filenames matching bar
 
 # File types
 ag --list-file-types # list file types that can be specified
@@ -454,7 +475,11 @@ uniq -cd # Show count of lines that have duplicates
 # by default shows num lines, words, characters (in that order)
 wc -w # word count only
 wc -l # line count only
+wc -c # bytes
+wc -m # characters
+
 wc -L # longest line length, used often for style in code, where 80 lines max may be a desired norm in a team
+
 find path/to/dir | xargs wc -l # count the number of lines of all files in a directory
 ```
 
@@ -481,12 +506,39 @@ sudo nano /etc/ssh/sshd_config # Uncomment and ensure 'PasswordAuthentication no
 ```
 
 #### sftp: Secure FTP
+```bash
+sftp ftp.example.com
+sftp user@ftp.example.com
+
+# upload/downlod
+put file.txt
+get file.txt
+
+# batch upload/download
+mput *.txt
+mget *.txt
+
+bin # binary mode
+
+# commands on local file system can be run by appending l in front
+lpwd
+lls
+lcd dir
+lmkdir dir
+```
 
 #### mv: Move file from src to dest
 ```bash
 mv src_file_or_directory dest_file_or_directory # base usage
 mv srcfile srcfile srcfile destdirectory # can move multiple sources at once
 mv hello.{txt,old} # quick rename
+```
+
+#### rename: Batch rename
+```bash
+rename 's/\.html$/\.php/' *.html # rename html file extensions to php
+-n # add this flag to list what would change without changing
+-v # add this flag to show changes made
 ```
 
 #### cp: Copy a file from src to dest
@@ -501,6 +553,10 @@ rm abc.txt # base usage, remove file
 rm -rf abc # recursive deletion (including subdirectories), f is force delete, use with caution
 rm -i # prompt before deleting
 rm !(*.foo\|*.bar\|*.baz) # delete everything but
+
+# can also use srm for secure removal
+srm -m /path/to/file # 7 pas
+srm /path/to/file # 35 pass
 ```
 
 #### diff: Compare two files
@@ -511,6 +567,7 @@ first lines in output refer to source lines, then a letter (a = add/+, c = chang
 -y # side by side
 
 -b # ignore things that change the whitespace only
+-b # ignore blank lines
 -w # ignore all space
 -i # ignore case
 
@@ -519,6 +576,8 @@ first lines in output refer to source lines, then a letter (a = add/+, c = chang
 -q # show only that the files differ, useful for scripts
 
 diff -r DIRECTORY1 DIRECTORY2 # show the difference between two directories
+diff -rq DIRECTORY1 DIRECTORY2 # show the difference between two directories, only showing the names of files that differ
+
 diff <(sort file1) <(sort file2) # show the difference between two files
 ```
 
@@ -631,18 +690,20 @@ curl -O http://www.example.com/index.html # output to the remote filename on loc
 
 # Common Options
 curl -X POST # can use the standard verbs, plus custom ones
-curl -H "Accept: application/json" # set custom headers, can add multiple by using multiple flags
+curl -H "Accept: application/json" # set custom headers, can add multiple by using multiple flags # can also use --header
 curl -d "birthyear=1905&press=%20OK%20"  http://www.example.com/when.cgi # send data to server in body, automatically POST, can also separate by separate -d arguments rather than an &
 curl -d @invoice.pdf -X POST http://devnull-as-a-service.com/dev/null # post a file
 curl -i http://www.example.com # show response body AND headers 
 
 # Other
 curl -v # verbose
+curl --cacert file.pem
 curl -d '{"user": {"name": "zaiste"}}' -H "Content-Type: application/json" http://server/
 curl --data-urlencode
 curl --form upload=@localfilename --form press=OK [URL] |
+curl -u myusername:mypassword http://localhost # pass a username and password for server authentication
 
-curl -head # head only
+curl --head # head request only
 
 curl ifconfig.me/ip # get IP
 curl ifconfig.me/port # get port
@@ -651,12 +712,19 @@ curl ifconfig.me/port # get port
 #### wget: Network Downloader
 ```bash
 # Basics
+wget http://path.to/file
+wget http://path.to/file1 http://path.to/file2
+
 wget -O abc.html http://www.example.com/def.html # output to file
 wget -i tmp.txt # download a list of URLs, file list has URLs listed one per line
 wget -b # background download, with log file at: /wget/log.txt
-wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted download, typically make this an alias for wget -c so it is automatic
+wget -c http://www.example.com/abc.tar.bz2 # continue a previously interrupted download, typically make 'wget -c' an alias for wget so it is automatic
 
-wget --mirror -p --convert-links -P ./localdirectory http://www.example.com/index.html # convert links converts links to local, -p downloads all files to view, -P saves to local directory
+
+wget -pk http://path.to.the/page.html # To mirror a whole page locally
+wget -mk http://site.tl/ # To mirror a whole site locally
+wget http://www.myserver.com/files-{1..15}.tar.bz2 # To download files according to a pattern
+
 wget -w 2 -r -np -k -p http://www.stanford.edu/class/cs106b # recursively download an entire site, waiting 2 seconds between hits (courtesy Stanford Startup Engineering class)
 wget --random-wait -r -p -e robots=off -U mozilla http://www.example.com # Download an entire website
 ```
@@ -692,6 +760,38 @@ jq '.[0] | {message: .commit.message, name: .commit.committer.name}' < abc.json 
 # Just the basics, see docs for more details: http://stedolan.github.io/jq/manual/
 ```
 
+#### convert: Image conversion
+Image conversion using ImageMagick - useful especially for resizing and converting formats.
+```bash
+convert src.jpg dest.png # convert from one format to another
+convert image.png -resize 50% out.png
+convert a.png b.png c.png +append out.png
+```
+
+#### at: Schedule command for later execution
+```bash
+command at {time}
+
+# {time} can be either
+# now | midnight | noon | teatime (4pm)
+# HH:MM
+# now + N {minutes | hours | days | weeks}
+# MM/DD/YY
+
+atq # To list pending jobs
+atrm {id} # To remove a job (use id from atq)
+
+```
+
+#### mount: Mount file systems
+
+```bash
+mount # show all mounted file systems
+mount | column -t
+
+mount /dev/sdb1 /u01 # mount device to directory
+```
+
 #### Other commands
 Command | Description
 :----: | ----
@@ -699,7 +799,8 @@ pwd | print working directory
 touch abc.txt def.txt | create empty file or files
 date | date and time
 date +%s / date -r 1231006505 | to/from unix epoch time
-cal / cal 3 1973 | calendar of current month
+date +"%Y%m%d_%H%M%S" | print out date in format for affixing to filenames
+cal / cal 3 1973 / cal -m 3 / cal -y 2013 | calendar of current month
 dirname/basename | basename will strip suffix provided as second argument
 whois hostname | 
 pidof | 
@@ -709,7 +810,6 @@ apropos command | find commands like this
 pbcopy / pbpaste | macintosh, pipe to/from these for clipboard, see alias section for Linux
 units | convert between units
 hostname | displays the system name
-mount /dev/sdb1 /u01 | mount device to directory
 read var1 | set variable to stdin
 yes | print y forever, used if you want dummy text, often used with head to restrict to a certain number of lines, can also tack on a prefix/suffix to make each line unique
 script | record everything typed in a text file
@@ -725,6 +825,9 @@ ifconfig eth0 # show a single interface
 ifconfig eth0 up # turn on
 ifconfig eth down # turn off
 ifconfig eth0 192.168.2.2 # assign IP address to interface, may need sudo privileges
+
+ifconfig eth0 promisc # turn on promiscuous mode
+ifconfig eth0 -promisc # turn off promiscuous mode
 ```
 
 #### gcc
@@ -767,6 +870,7 @@ ldd -v # verbose
 # used rather than scp when want more complex usage - e.g., can create a directory at the destination if it doesn't already exist
 rsync -avz server:abc/ .# recursively transfer all files, using compression (z), plus archive mode (a - preserves symbolic links, dates) and verbose (v)
 rsync -avp # preserve permissions
+# Others: -r, copy recursively, -h human readable numbers
 ```
 
 #### pgrep: Find processes by name
@@ -787,12 +891,15 @@ pgrep -f abc.rb # Find the pids of processes with 'abc.rb' as an argument, like 
 ```bash
 awk '/search_pattern/ { action_to_take_on_matches; another_action; }' file_to_parse # standard structure, print is default action if nothing specified
 awk '/search_pattern/ { print $1; } /etc/fstab # print column 1
+awk -F ',' '{print $3}' filename # print 3rd column in CSV file
+awk '{s+=$1} END {print s}' filename # Sum the values in the first column and print the total
 ```
 
 #### tr: Translate Characters (replace a character with another)
 ```bash
 tr ' ' '\_' < abc.txt # replace spaces with underscore, and print to stdout
 echo abcdef | tr 'abcdef' 'xyzabc' # each single character in the first string is translated to the corresponding character in the second string
+tr '[:lower:]' '[:upper:]'
 tr "A-Za-z" "a-zA-Z" # reverse case
 tr "a-z" "A-Z" # make lowercase uppercase
 tr -d '\r' # delete character, useful when moving txt files between Windows and Linux
@@ -884,7 +991,9 @@ lsof /some/dir/path # list all open files under path
 lsof somefile.txt
 lsof -i # list IP Sockets
 lsof -iTCP
+lsof -i TCP:22
 lsof -i -sTCP:LISTEN # Find listening ports
+lsof -iTCP:80 -sTCP:LISTEN
 lsof -i -sTCP:ESTABLISHED # Find established connections
 lsof -iUDP # UDP is for media, when speed matters, but quality does not
 lsof -i :80 # list all processes on specific port, this is for web processes
@@ -896,6 +1005,9 @@ lsof -c top # show files/connections open by a binary
 lsof -p 1232 # for pid
 lsof -p `pidof auditd`
 lsof -i @fw.google.com:2150=2180 # port range
+
+lsof -t /path/to/file | xargs kill -9 # only output the process PID, then pipe to kill
+
 | grep LISTEN for ports that are awaiting connections
 | grep ESTABLISHED
 ```
@@ -924,6 +1036,9 @@ strace -p 123 # use PID 123, for running process
 This command is often used in concert with [parallel](#parallel): split breaks up a file (like a data CSV), and then parallel lets you process each section concurrently
 ```bash
 split -b 75m input.zip # cut into multiple files of 75m max
+split -n 5 filename # split into 5 files
+split -l 10 filename # split into files with each having 10 lines (except last)
+
 cat `ls x*` > reassembled.zip
 ```
 
@@ -932,7 +1047,14 @@ TODO
 
 #### openssl
 ```bash
+openssl genrsa -out server.key 2048 # create a 2048 bit private key
+openssl req -new -key server.key -out server.csr # create a Certificate Signing Request
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt # Sign certificate using a private key and CSR
+
 openssl sha1 filename # get sha1 hash of filename
+# can also use m5sum on file, to get md5 hash
+md5sum file.txt
+
 openssl dgst -sha256
 openssl dgst -ripemd160
 openssl s_client -connect www.domain.com:443 -showcerts # get certificate from a certain server
@@ -941,7 +1063,7 @@ openssl s_client -connect www.domain.com:443 -showcerts # get certificate from a
 #### ping: Send request to network host
 ```bash
 ping google.com # see if a site is up and you can connect to it, resolves domain to IP; does continuously till you terminate
-ping -c 3 google.com # ping 3 times
+ping -c 3 google.com # ping 3 times then quit
 ```
 
 #### traceroute (Print route packets take to host) and mtr (Network Diagnostic)
@@ -949,6 +1071,8 @@ ping -c 3 google.com # ping 3 times
 traceroute google.com
 traceroute -m 255 google.com # up to 255 hops away, default is 30
 traceroute google.com 70 # change packet size to 70 bytes
+traceroute -w 0.5 host # wait time for response
+traceroute -q 5 host # queries per hop
 
 # mtr combines ping and traceroute, main advantage is continous updating
 mtr google.com
@@ -962,6 +1086,13 @@ host -t mx google.com # MX servers
 host -a google.com # all servers
 ```
 
+#### nslookup: Query internet name serve
+```bash
+nslookup example.com
+nslookup -query=mx example.com
+nslookup -type=ns example.com
+```
+
 #### dig: DNS Lookup Utility
 Testing for DNS info associated with a domain
 ```bash
@@ -969,12 +1100,24 @@ dig example.com # defaults to A records
 dig example.com MX # mail records
 dig example.com ANY # all records
 dig your_domain_name.com +short # IP that domain points to only
+
+dig @8.8.8.8 hostname.com # pick another DNS server to query (8.8.8.8 is Google's)
 ```
 
 [Start of More Advanced?]
+#### ab: Apache Benchmarking
+ab -n 100 -c 50 http://www.example.com/ # send 100 requests with a concurency of 50 requests to an URL
+ab -t 30 -c 50 URL http://www.example.com/ # send requests during 30 seconds with a concurency of 50 requests to an URL
+
 #### tcpdump: Dump traffic on a network
 (Note: This needs to be culled)
 ```bash
+# Basics
+tcpdump -i eth0 # capture traffic of a specific interface
+tcpdump -A tcp # captura all traffic
+tcpdump host 2.3.4.5 # capture all traffic to or from host (src, dest below restrict to one direction)
+tcpdump -i eth0 src 192.168.1.1 dest 192.168.1.2 and port 80 # capture the traffic from a specific interface, source, destination and port
+
 # for a quick primer on TCP look here: TODO
 tcpdump -n # don't resolve names, keep IP addresses
 -X # displays both hex and ASCII content within the packet
@@ -983,7 +1126,6 @@ tcpdump -n # don't resolve names, keep IP addresses
 tcpdump -nS # Basic communication
 tcpdump -nnvvXS
 tcpdump -nnvvXSs 1514
-tcpdump host 2.3.4.5 # same as both src and dst below
 tcpdump src 2.3.4.5
 tcpdump dst 2.3.4.5
 tcpdump port 3389
@@ -993,6 +1135,7 @@ tcpdump portrange 21-23
 ```
 
 #### netstat: Show network status
+
 Basics:  
 Ports 1 - 65,535
   - 1 - 1024 associated with Linux, must typically have root priveleges to assign to this range
@@ -1019,7 +1162,12 @@ sudo netstat -plunt # show port and listening socket associated with the service
 netstat -a # list all ports
 netstat -at # all TCP
 netstat -au # all UDP
+
+netstat -l # active listening
+
 netstat -a # show statistics
+netstat -r # display routing table information
+netstat -c 1 # update at time
 ```
 
 #### nmap: Host Discovery and Port Scanning
@@ -1030,6 +1178,7 @@ netstat -a # show statistics
 nmap localhost
 nmap 192.16.10.0
 nmap scanme.nmap.org # test server
+nmap -sn {{192.168.0.1/24}} # discover hosts in the 192.168.0.X area , without a port scan
 
 nmap -O hostname # tells you Operating System information
 nmap -PN remote_host # assume host is up
@@ -1049,6 +1198,20 @@ nmap -oN # .nmap output, human readable
 nmap -6 # scans ipv6
 ```
 
+#### nc: reads and writes tcp or udp data
+```bash
+nc -l 80 # listen on port
+nc 128.0.0.1 21 # connect to a certain port (then can write to it)
+cat somefile.txt | nc -l 1000 # serve a file on port
+nc 128.0.0.1 21 > somefile.txt # receive a file
+```
+
+#### icon: Convert from one encoding to another
+```bash
+iconv -f FROM_ENCODING -t TO_ENCODING input_file
+iconv -l # list supported encodings
+```
+
 ## [Command Cocktails](#command_cocktails)
 ```bash
 grep . *.txt # prints all matched files in directory, and prepends filename to each line
@@ -1064,10 +1227,20 @@ curl -sS https://getcomposer.org/installer | php # pull down a php file and run 
 This section is for things related to user management, process management, filesystem, or the general system.
 
 ### Users, Groups and Permissions
+#### useradd/userdel: Add/delete user
+```bash
+useradd some_username
+userdel -r username # delete a user with home directory
+userdel johndoe group | remove user from group
+```
+
 #### chown: Change ownership (chown)
 ```bash
 chown bob file.txt
+chown bob:new_group file.txt # change group and owner
 chown -R user:group path/to/directory/ # apply recursively
+chown --reference=file.txt secondfile.txt # transfer owner and group from reference to secondfile
+chown -h bob path/to/symlink # change owner of symlink
 ```
 
 #### chmod: Change mode
@@ -1083,6 +1256,7 @@ chmod -x abc.out
 chmod g+x abc.out
 chmod go-rwx file.txt
 chmod -R # apply recursively to all files in the subdirectory
+chmod o=g file.txt # give others the same rights as the group
 
 sudo chmod -R 700 secret_folder # allow only root access to folder
 ```
@@ -1114,7 +1288,6 @@ users | list of users who are currently logged in
 finger username | info on user, including logins
 last, last username | list of login history for a user or all users
 groups | Outputs the groups to which your account belongs to.
-adduser johndoe | need super user privileges
   
 
 ### Processes and Jobs  
@@ -1124,20 +1297,32 @@ Linux and BSD flavors of top are very different
 use htop, not top when possible  
 ```bash
 top -U johndoe # see processes owned by johndoe
-# use 'q' to quit, and 'k' (on Linux only) to pick a PID to kill, can do '?' to see which keyboard options are available
+top -s 10 # 10 second delay between updates
+top -n 10 # 10 iterations, then quit
 
-htop
+
 # Keys
 # M - sort processes by memory usage
 # P - sort processes by processor usage
 # k - kill current tagged process
 # /substring - Search processes for substring
+
+# O then letter from list - sort by variable
+# z - show running process
+# c - show absolute path
+# k PID - kill pid
+# r - renice
+# h - help
+# q - quit
 ```
 
 #### ps: Process status
 ```bash
 ps aux | grep process # standard usage, display info about all users processes; often used in conjunction with kill
 ps axjf # tree view
+ps aux | grep '[h]ttpd' # bracket first letter in grep to exclude the grep result
+ps auxww # list all running processes including the full command string
+
 ps -l # long option
 ps -u abc,def # users
 ps -f -p 123 # find by process id
@@ -1160,7 +1345,7 @@ kill -9 2592 # non-ignorable kill, SIGKILL
 kill %1 # kill job number 1 from 'jobs' list
 kill -SIGTERM 2931 # can use any of the signals above
 pkill -9 ping # same as kill -9 `pgrep ping`
-kill -l # list all signals
+kill -l # list all signal names
 ```
 
 #### killall: Killall
@@ -1173,10 +1358,11 @@ killall command # kills all instances of command owned by user (root user kills 
 pkill -f httpd # kills all instances of httpd dameon owned by user
 ```
 
-#### vmstat
+#### vmstat: Report virtual memory statistics
 ```bash
-vmstat # info on memory, swap etc
+vmstat -a # info on memory, swap etc
 vmstat -S M # outputs in megabytes 
+vmstat 2 6 # update every two seconds, stop after 6 iterations
 ```
 
 #### nice: execute a utility with an altered scheduling priority
@@ -1190,10 +1376,13 @@ renice 17 -p 1134 # change the priority of job with pid 1134 to 17
 
 #### du: Disk Usage
 ```bash
-du * | sort -r # display usage of each file and subdirectory in current directory starting with largest, can use with head to get the largest items at top
-du -sh * # disk usage of items in directory, but does not traverse (s = summarize) subdirectories
-du -shc * # same as above, but adds a total at the end
+# Basics
+du /some/dir
+du -sh /some/dir # disk usage of items in directory, but does not traverse (s = summarize) subdirectories
 du -h --max-depth=1 # List human readable size of all sub folders from current location
+
+du * | sort -r # display usage of each file and subdirectory in current directory starting with largest, can use with head to get the largest items at top
+du -shc * # same as above, but adds a total at the end
 
 du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
 ```
@@ -1203,12 +1392,15 @@ du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not
 df -h # disk free by volume, h is pretty format for size (mb, kb, etc)
 df -lh # local file systems only
 df -h --total # add total column, non-BSD
+
+df -m # show in megabytes
+df -h # show in gigabytes
 ```
 
 #### free
 ```bash
-free -mt # free space (amount of RAM, swap), not available on BSD; 
 free -mt # latter option uses space in megabytes with total
+free -s 5 # refresh at 5 second intervals
 ```
 
 ### Package Management  
@@ -1286,6 +1478,7 @@ man hier # get an explanation of the system directory structure
 #### alias: Create a command alias
 ```bash
 alias m='less' # create alias m to call less command
+unalias m # remove alias
 ```
 
 #### export: export shell variables
@@ -1315,11 +1508,23 @@ shutdown now
 shutdown -h +10
 ```
 
+#### service
+```bash
+service ssh start
+service ssh restart
+service ssh stop
+```
+
+#### dd: convert and copy a file
+```bash
+# Read from /dev/random 2*512 Bytes and put it into /tmp/abc.txt
+dd if=/dev/random of=/tmp/abc.txt count=512 bs=2
+```
+
 #### Other commands
 Command | Description
 :-----: | -----
-service ssh restart | restart service
 uptime | time system has been up
-uname -a | get information about system
+uname -a | get all system information
 echo $0 | determine which shell (e.g., bash)
 hash, hash -r | table of where commands can be found based on usage, -r empties table when you may have changed the path
