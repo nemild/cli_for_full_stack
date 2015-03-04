@@ -153,6 +153,8 @@ mkdir -p foo/{bar,baz} # create both bar and baz subdirectories
 
 #### ls: List directory contents
 ```bash
+
+ls -1 # (Number 1) list in a column
 ls -l # provide information (ownership, permissions, file size, modification date)
 ls -h # make disk usage info pretty (kb, mb, etc.) - not bytes
 ls -r # reverses order, now ascending rather than descending
@@ -220,14 +222,16 @@ less filename.txt # print file with pagination
 less filename.txt filename2.txt # open multiple files, can use :n and :p to move back and forth
 less +F # use instead of tail -f, can Ctrl-C, /searchterm, and then type F to have search terms highlighted
 less -r # retain color codes, e.g., use with color options on the command you are piping to less
-less -S # chop lines that go past screen end (rather than wrapping)
+less -S # chop lines that go past screen end (rather than wrapping), allows horizontal scrolling
 ```
 
 #### head: Display the first part of a file
+Both head and tail show a delimiter with a filename, and can be used for multiple files simultaneously
 ```bash
 head -100 abc.txt # number of lines, can also do -n 100, default is 10 when not specified
 head -c50 # first 50 characters
 head abc.txt def.txt # multiple files
+head * # list all files in directory, with name as delimiter
 head -q *txt *gbk # heads of multiple files w/o delimiters
 ```
 
@@ -359,6 +363,7 @@ ag -G pattern substring # only searches filenames matching pattern
 #### find: Walk a file hierarchy (search for files etc. matching certain criteria, can also be used with xargs/parallel )
 ```bash
 find . -name "hello.txt" # standard usage
+find . -name "*.txt"
 find / -name "ice.log" # search filesystem root for files named ice.log 
 find . -name “abc” 2>/dev/null # output to dev null when doing global search, and don't want to discard errors (e.g., file is not accessible because not a super user)
 -iname "abc.txt" OR -iname "*.txt" # search for case insensitive
@@ -437,7 +442,7 @@ xz -d out.xz # decompress
 xz -l out.xz # list
 ```
 
-#### zip – Cross platform zip (Mac OS X) 
+#### zip: Cross platform zip (Mac OS X) 
 ```bash
 zip -r archive_name.zip folder_to_compress #compress
 unzip archive_name.zip #extract
@@ -454,8 +459,10 @@ sort -n # sort according to numerical value on line (even if there is other text
 sort -R # randomize, GNU sort
 sort -f # ignore case
 sort -u # show max 1 of each unique element
-sort -k 2 # start at key 2 (used for seprated columns, like the history command)
+sort -k 2 # start at key 2 (used for separated columns, like the history command)
+sort -k2,2
 sort -h # sort by human readable size (use with -h on another command, like du -h), GNU sort
+sort -T /some/tmp/dir # can set a custom temp directory for large sort jobs
 ```
 
 #### uniq
@@ -544,7 +551,7 @@ rename 's/\.html$/\.php/' *.html # rename html file extensions to php
 #### cp: Copy a file from src to dest
 ```bash
 cp src dest # base usage
-cp -r src dest # recursive
+cp -R srcdir destdir # recursive
 ```
 
 #### rm: Remove file
@@ -888,9 +895,20 @@ pgrep -f abc.rb # Find the pids of processes with 'abc.rb' as an argument, like 
 [General Tutorial] (https://www.digitalocean.com/community/tutorials/how-to-use-the-awk-language-to-manipulate-text-in-linux)
 [awk one liners](http://www.pement.org/awk/awk1line.txt)
 
+Awk executes its code once every line
+$1 is first field, $2 is second, etc.
+$0 is whole line
+
+**Custom variables**  
+NR - row number
+NF - total number of fields (columns)
+$NF - contents of last field
+OFS - output delimiter
+
 ```bash
 awk '/search_pattern/ { action_to_take_on_matches; another_action; }' file_to_parse # standard structure, print is default action if nothing specified
 awk '/search_pattern/ { print $1; } /etc/fstab # print column 1
+awk 'BEGIN{x=""}{x=x"@"$1}END{print x}' # Begin run at start, End run at end
 awk -F ',' '{print $3}' filename # print 3rd column in CSV file
 awk '{s+=$1} END {print s}' filename # Sum the values in the first column and print the total
 ```
@@ -1322,6 +1340,12 @@ ps aux | grep process # standard usage, display info about all users processes; 
 ps axjf # tree view
 ps aux | grep '[h]ttpd' # bracket first letter in grep to exclude the grep result
 ps auxww # list all running processes including the full command string
+
+ps # shows just the processes started at terminal
+ps -A # show all process info
+ps -fA # show all process info (verbose)
+
+pstree # see process tree
 
 ps -l # long option
 ps -u abc,def # users
