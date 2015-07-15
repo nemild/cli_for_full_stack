@@ -1,11 +1,6 @@
 # CLI for Full Stack Engineers
 A prioritized list of the most important CLI commands for full stack engineers
 
-#### How you can help
-* Add additional commands or flags that you think are critical, **especially common usages (e.g., compound arguments) (which don't appear in man pages)**
-* **Add command cocktails (e.g., multi piped commands)** that you think full stack engineers should know or will benefit from
-* Rearrange the doc and flags for a given command to be in the order of rough importance/usage, and comment if there's something too esoteric in this doc
-
 #### Key Principles
 * **Less is more**: This is a prioritized list that totally ignores less used commands or command flags - it is NOT a reference list. This doc is meant to represent the entire histogram of commands used by (or that should be used by) all full stack developers today - and aims to concentrate on the most important parameterizations of the most important commands and command cocktails
 * **Audience**: The audience is a full stack (or part stack) engineer, NOT a sysadmin
@@ -16,6 +11,8 @@ A prioritized list of the most important CLI commands for full stack engineers
 * This doc includes other basics of the CLI (keyboard shortcuts and very basic vim) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
 
 ## Other Resources
+* [ExplainShell](http://explainshell.com/): Explains the various command lines of any typed command
+* [Art of the Command Line](https://github.com/jlevy/the-art-of-command-line): An overview of key commands to know
 * [Bro Pages](http://bropages.org/): Lists popular options for many of the most used commands, crowdsourced and upvoted (used to augment several commands below)
 * [tldr pages](https://github.com/tldr-pages/tldr)
 * [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
