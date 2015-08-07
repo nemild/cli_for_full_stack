@@ -8,16 +8,20 @@ A prioritized list of the most important CLI commands for full stack engineers
 * **Terseness**: Use the minimal amount of words to explain something, this is not documentation
 * **Context**: It might be relevant to explain when or how something should be used if it is non-obvious (or even link to the relevant doc - see strace)
 * There’s a mix of BSD and Ubuntu (many people use Mac for dev and a Ubuntu-type instance for the server) - this probably needs to be better called out; this is focused on bash
-* This doc includes other basics of the CLI (keyboard shortcuts and very basic vim) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
+* This doc includes other basics of the CLI (keyboard shortcuts) with the assumption that this helps people get around CLIs (e.g., when ssh-ing into a server)
 
 ## Other Resources
-* [ExplainShell](http://explainshell.com/): Explains the various command lines of any typed command
 * [Art of the Command Line](https://github.com/jlevy/the-art-of-command-line): An overview of key commands to know
+* [Awesome Shell](https://github.com/alebcay/awesome-shell): A list of other CLI tools outside of the basics
 * [Bro Pages](http://bropages.org/): Lists popular options for many of the most used commands, crowdsourced and upvoted (used to augment several commands below)
 * [tldr pages](https://github.com/tldr-pages/tldr)
 * [Command Line Fu](http://www.commandlinefu.com/commands/browse/sort-by-votes): Lists popular commands, use link to see top voted over all time
 * [Sobel's Guide to Linux Command's Editors, and Shell Programming](http://www.amazon.com/Practical-Guide-Commands-Editors-Programming/dp/013308504X/ref%3Dsr_1_1): One of the more popular Linux books, includes examples and many basics (perl, bash programming, python) - fairly distribution agnostic
 * [Digital Ocean Tutorials](https://www.digitalocean.com/community/tutorials/)
+
+## Tools
+* [shellcheck](http://www.shellcheck.net/): Linting for shell scripts
+* [ExplainShell](http://explainshell.com/): Explains the various command lines of any typed command
 
 ##### Authors
 * Nemil Dalal (nemild at gmail)
@@ -30,43 +34,45 @@ A prioritized list of the most important CLI commands for full stack engineers
 <a href="#basics">Basics</a>  
 <a href="#advanced">Advanced</a>  
 <a href="#command_cocktails">Command Cocktails</a>  
+<a href="#custom_commands">Custom Commands</a>
 
 <a href="#sysadmin_basics">Sysadmin Basics</a>  
 <a href="#setup">Setup</a>  
 
 ## [Keyboard Shortcuts](#keyboard_shortcuts)
 Keyboard Shortcut | Description
-:-------: | ---------
-*Ctrl-C* | terminate program, TERM signal
-*Ctrl-\\* | QUIT signal
-*Ctrl-A* | go to start of line
-*Ctrl-E* | go to end of line
-*Ctrl-W* | cut the previous word
-*Ctrl -* | undo
-*Ctrl-U* | clears the line before the cursor position.
-*Ctrl-K* | Kill the line after the cursor
-*Ctrl-U/Ctrl-Y* | Cut line, write text and then paste line after new text
-*Ctrl-XX* | Move between start of line and current cursor position
-*Ctrl-X/Ctrl-E* | use text editor to input command, used for long or multiline commands, can also use `fc`
-*Ctrl-L* | clear screen
-*Ctrl-D* | terminate program (send EOF)
-*Ctrl-Z* | suspend program, `fg` to return
-*Ctrl-R* | search command history, start typing command, ctrl-r again to cycle through other matches in reverse chronological order
-*Ctrl-G* | Escape from search command mode (may be just easier to use Ctrl-C)
-*ESC-.* | past last argument of previous command
-*Ctrl-B/Ctrl-F* | Page up and down
-*Ctrl-D/Ctrl-U* | Half page up and down
-*Ctrl-S/Ctrl-Q* | stop output to screeen (for verbose commands) / resume output to screen
-*Ctrl-T* | swap previous two characters (used for misspellings)
-*Meta-T* | swap previous two words
-*ESC-BACKSPACE* | delete previous word
-*ESC-d* | delete next word
+:--------------:  | ------------------------------
+*Ctrl-C*          | terminate program, TERM signal
+*Ctrl-\\*         | QUIT signal
+*Ctrl-A*          | go to start of line
+*Ctrl-E*          | go to end of line
+*Ctrl-W*          | cut the previous word
+*Ctrl -*          | undo
+*Ctrl-U*          | clears the line before the cursor position.
+*Ctrl-K*          | Kill the line after the cursor
+*Ctrl-U/Ctrl-Y*   | Cut line, write text and then paste line after new text
+*Ctrl-XX*         | Move between start of line and current cursor position
+*Ctrl-X/Ctrl-E*   | use text editor to input command, used for long or multiline commands, can also use `fc`
+*Ctrl-L*          | clear screen
+*Ctrl-D*          | terminate program (send EOF)
+*Ctrl-Z*          | suspend program, `fg` to return
+*Ctrl-R*          | search command history, start typing command, ctrl-r again to cycle through other matches in reverse chronological order
+*Ctrl-G*          | Escape from search command mode (may be just easier to use Ctrl-C)
+*ESC-.*           | past last argument of previous command
+*Ctrl-B/Ctrl-F*   | Page up and down
+*Ctrl-D/Ctrl-U*   | Half page up and down
+*Ctrl-S/Ctrl-Q*   | stop output to screeen (for verbose commands) / resume output to screen
+*Ctrl-T*          | swap previous two characters (used for misspellings)
+*Meta-T*          | swap previous two words
+*ESC-BACKSPACE*   | delete previous word
+*ESC-d*           | delete next word
 
 ## [Getting around the command line](#getting_around_the_command_line)
 #### Other Basics
 * Three streams are stdin, stdout, and stderr
 * find . 2> # the 2> pipes out stderr only, can use &> to pipe out both stdout and stderr
 * pipe both standard error and stdout is |&
+* Treat output of command as a file input: `diff /etc/hosts <(ssh somehost cat /etc/hosts)`
 
 #### Previous Commands or Arguments
 ```bash
@@ -182,11 +188,14 @@ ls -larthG # same as above plus show hidden, human readable file size, colorize
 man command # shows manual page for command typically using less
 man -k keyword # do a keyword search for manpages containing a search string
 
+# For bash built ins, use help
+
 # The following are popular commands in man
 Ctrl-B/Ctrl-F # page up and down
 /searchterm # to search forward, can use standard vim commands including n and N to go forward and backward to searchterms, use this to search for flags ('-n')
 ?searchterm # search backward
 h # display help, keyboard shortcuts
+man man # shows section numbers
 man ascii # ascii table
 man hier # explanation of file systen
 man 2 ls # go to section 2 of ls, search for what each section number means
@@ -375,6 +384,7 @@ find -maxdepth 1 # only list in current directory, not subdirectories
 find -perm 444 # search based on permissions
 
 # Popular usages
+find . -type f -ls # shows sizes/dates on tree of files, but easier to read than ls -lR
 find . | wc -l # number of files in directory and subdirectories
 find . -name "*.foo" -exec tail {} \; # output the last 10 lines in each .foo file in directory and subdirectories
 find . -iname '*foo*' # find all files that contain foo in their name
@@ -457,9 +467,12 @@ sort -R # randomize, GNU sort
 sort -f # ignore case
 sort -u # show max 1 of each unique element
 sort -k 2 # start at key 2 (used for separated columns, like the history command)
-sort -k2,2
+sort -k2,2 # sort only by 2
+sort -k1,1 | sort -s -k2,2 # sort by 1, then secondarily by 2
+
 sort -h # sort by human readable size (use with -h on another command, like du -h), GNU sort
 sort -T /some/tmp/dir # can set a custom temp directory for large sort jobs
+sort -t , # use custom separator
 ```
 
 #### uniq
@@ -498,6 +511,9 @@ ssh -p 1000 remote_host # ssh to port 1000 on remote
 ssh hostname "cd abc && ls -lah" # ssh then run command
 ssh -D 1234 hostname # use hostname as a SOCKS proxy on localhost:1234
 ssh -f -N -R 8888:example.com:80 username@remote_host
+
+ssh -L # specify that the given port on the local side should be forwarded to port on remote side
+ssh -R # 
 
 # Can suspend a session by pressing 1. Enter 2. ~ 3. CTRL-Z
 # Tilde (~) lets you send commands to SSH
@@ -583,6 +599,7 @@ diff -r DIRECTORY1 DIRECTORY2 # show the difference between two directories
 diff -rq DIRECTORY1 DIRECTORY2 # show the difference between two directories, only showing the names of files that differ
 
 diff <(sort file1) <(sort file2) # show the difference between two files
+diff -r tree1 tree2 | diffstat
 ```
 
 #### nl: Line Numbering
@@ -740,6 +757,13 @@ cut -c1 # extract character
 cut -c1-5 # extract range of characters
 cut -c1- # extract from 1 to end
 --complement # invert
+```
+
+#### join: Relational database operator
+```bash
+join -1 1 -2 2 abc.txt def.txt # default join is on field 1, use -1 and -2 to specify column if different, inner join by default
+-t , # use , as field delimiter
+-a1 -a2 # left outer join, right outer join; both together are full outer join
 ```
 
 #### tee: copies standard input to standard output, making a copy in file
@@ -939,6 +963,7 @@ sleep 1d 5h 5m 10s # can create a list, Linux only
 
 #### sed: Stream Editor
 Primarily used for substitution (leading 's' below)
+[Tutorial](http://code.snipcademy.com/tutorials/shell-scripting/sed/introduction)
 ```bash
 sed 's/day/night' abc.txt def.txt # replace first 'day' with 'night' per line, can use with multiple files
 sed -e 's/day/night' -e 's/something/else/g' abc.txt # -e lets you specify separate commands
@@ -1089,7 +1114,7 @@ traceroute google.com 70 # change packet size to 70 bytes
 traceroute -w 0.5 host # wait time for response
 traceroute -q 5 host # queries per hop
 
-# mtr combines ping and traceroute, main advantage is continous updating
+# mtr combines ping and traceroute, main advantage is continous updating, typically use this rather than traceroute
 mtr google.com
 mtr --report google.com # sends 10 packets to each hop
 ```
@@ -1230,6 +1255,7 @@ iconv -l # list supported encodings
 ## [Command Cocktails](#command_cocktails)
 ```bash
 grep . *.txt # prints all matched files in directory, and prepends filename to each line
+grep . * # prints all matched files in directory, often used when want to quickly look at settings files in a given directory
 diff <(ls) <(ls) # compare ouput of two commands, rather than having to write each to a file first
 wc < abc.txt # use this instead of cat abc.txt \| wc, saves a new process, important only for big files; don't pipe a cat
 (head -5; tail -5) < data # explore first 5 and last 5 lines
@@ -1331,6 +1357,20 @@ top -n 10 # 10 iterations, then quit
 # q - quit
 ```
 
+#### htop
+u - filter by user
+t - tree mode
+s - strace
+l - lsof
+F - follow a process
+h - help
+k - kill a process
+I - invert sort order
+
+P - sort by processor usage
+M - sort by memory usage
+T - sort by time
+[Type in pid to find]
 #### ps: Process status
 ```bash
 ps aux | grep process # standard usage, display info about all users processes; often used in conjunction with kill
@@ -1343,6 +1383,7 @@ ps -A # show all process info
 ps -fA # show all process info (verbose)
 
 pstree # see process tree
+pstree -p # show pids
 
 ps -l # long option
 ps -u abc,def # users
@@ -1360,6 +1401,8 @@ ps aux --sort pmem # sort by column
 # 6 - SIGABRT
 # 15 - SIGTERM - Termination Signal, default signal sent by kill
 # 9 - SIGKILL - Kill Signal, immediate kill by the kernel
+
+man 7 signal # see full list of signals
 
 kill 2592 # kill PID 2592, send TERM signal when not specified
 kill -9 2592 # non-ignorable kill, SIGKILL
@@ -1406,6 +1449,8 @@ du * | sort -r # display usage of each file and subdirectory in current director
 du -shc * # same as above, but adds a total at the end
 
 du --max-depth=1 -b | sort -k1 -rn # largest files in directory, linux only, not Mac
+
+# Use ncdu is faster when looking at why a disk is full
 ```
 
 #### df: Disk Free
